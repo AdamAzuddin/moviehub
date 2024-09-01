@@ -13,8 +13,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link"; // Assuming you're using Next.js
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 export default function SignUpForm() {
   const router = useRouter();
@@ -24,39 +22,45 @@ export default function SignUpForm() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Check password length
     if (password.length < 6) {
       setPasswordError("Password must be at least 6 characters long.");
-      return; // Exit the function early if password is too short
+      return;
     }
-
+  
     try {
-      // Sign up user with email and password
+      // Dynamically import Firebase SDK functions
+      const { createUserWithEmailAndPassword: dynamicCreateUserWithEmailAndPassword } = await import('firebase/auth');
+      const { collection, addDoc } = await import('firebase/firestore');
+  
       console.log("Connecting to firestore");
-      const userCredential = await createUserWithEmailAndPassword(
+  
+      const userCredential = await dynamicCreateUserWithEmailAndPassword(
         auth,
         email,
         password
       );
       const user = userCredential.user;
-
+  
       // Proceed to add additional information to Firestore
-      await addUserToFirestore(user.uid);
-
+      await addUserToFirestore(user.uid, collection, addDoc);
+  
       console.log("User signed up and added to Firestore successfully");
       router.push("/"); // Redirect to profile page after sign up
     } catch (error) {
       console.error("Error signing up:", error);
+      setPassword(''); // Reset password input
     }
   };
+  
 
-  const addUserToFirestore = async (userId: string) => {
+  const addUserToFirestore = async (userId: string, collection: Function, addDoc: Function) => {
     try {
       let userData: any = {
         email,
       };
-
+  
       await addDoc(collection(db, "users"), {
         uid: userId,
         ...userData,
@@ -66,6 +70,7 @@ export default function SignUpForm() {
       throw error;
     }
   };
+  
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader className="space-y-1">
@@ -94,9 +99,9 @@ export default function SignUpForm() {
               required
               onChange={(e) => {
                 setPassword(e.target.value);
-                setPasswordError(""); // Clear password error message when user types in the password field
               }}
             />
+            {passwordError && <p className="text-red-500">{passwordError}</p>}
           </div>
           <Button type="submit" className="w-full" onClick={handleSignUp}>
             Sign Up
