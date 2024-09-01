@@ -1,4 +1,6 @@
 "use client";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -10,12 +12,59 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link"; // Assuming you're using Next.js
+import { db } from "@/lib/firebase";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
-function signIn() {
-  console.log("Signed in");
-}
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+
 
 export default function SignInForm() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isClient, setIsClient] = useState(false); // State to track client-side rendering
+
+  // useEffect to set isClient to true when component is mounted
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Sign in user with email and password
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Fetch user data from Firestore based on email
+      const q = query(collection(db, "users"), where("email", "==", email));
+      const userSnapshot = await getDocs(q);
+      if (!userSnapshot.empty) {
+        // Get the user document data
+        const userData = userSnapshot.docs[0].data();
+        // Determine the redirect route based on user type from Firestore
+        let redirectRoute = "/"; // Default route
+        const userType = userData.userType; // Assuming userType is a field in the user document
+        console.log("User signed in successfully");
+        router.push(redirectRoute); // Redirect to appropriate route after sign in
+      } else {
+        console.error("User data not found in Firestore");
+      }
+    } catch (error) {
+      console.error("Error signing in:", error);
+    }
+  };
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader className="space-y-1">
@@ -33,13 +82,14 @@ export default function SignInForm() {
               type="email"
               placeholder="m@example.com"
               required
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" required onChange={(e) => setPassword(e.target.value)}/>
           </div>
-          <Button type="submit" className="w-full" onClick={signIn}>
+          <Button type="submit" className="w-full" onClick={handleSignIn}>
             Login
           </Button>
           <p className="text-sm text-center mt-4">
