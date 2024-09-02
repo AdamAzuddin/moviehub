@@ -20,9 +20,9 @@ const AuthPage = () => {
         {isSignUp ? (
           <Label className='text-center pt-5'>
             Already have an account?{' '}
-            <Button onClick={toggleForm} className="link-button">
+            <button onClick={toggleForm} className="link-button">
               Sign In
-            </Button>
+            </button>
           </Label>
         ) : (
           <Label  className='items-center pt-5'>
