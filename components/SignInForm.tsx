@@ -11,10 +11,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link"; // Assuming you're using Next.js
 import { db } from "@/lib/firebase";
 import {
-  getFirestore,
   collection,
   query,
   where,
@@ -29,12 +27,6 @@ export default function SignInForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isClient, setIsClient] = useState(false); // State to track client-side rendering
-
-  // useEffect to set isClient to true when component is mounted
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
