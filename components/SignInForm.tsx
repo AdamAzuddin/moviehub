@@ -92,12 +92,6 @@ export default function SignInForm() {
           <Button type="submit" className="w-full" onClick={handleSignIn}>
             Login
           </Button>
-          <p className="text-sm text-center mt-4">
-            Don&apos;t have an account?
-            <Link href="/sign-up" className="text-blue-500 hover:underline">
-              Sign up
-            </Link>
-          </p>
         </div>
       </CardContent>
     </Card>

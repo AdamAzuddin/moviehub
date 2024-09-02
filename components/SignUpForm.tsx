@@ -106,12 +106,6 @@ export default function SignUpForm() {
           <Button type="submit" className="w-full" onClick={handleSignUp}>
             Sign Up
           </Button>
-          <p className="text-sm text-center mt-4">
-            Already have an account?{" "}
-            <Link href="/sign-in" className="text-blue-500 hover:underline">
-              Sign in
-            </Link>
-          </p>
         </div>
       </CardContent>
     </Card>
