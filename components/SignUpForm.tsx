@@ -13,11 +13,13 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
+import { Users } from "@/types/types";
 export default function SignUpForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState(""); // State to hold password error message
+  const [passwordError, setPasswordError] = useState("");
+  const [username, setUsername] = useState("")
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,8 +58,9 @@ export default function SignUpForm() {
 
   const addUserToFirestore = async (userId: string, collection: Function, addDoc: Function) => {
     try {
-      let userData: any = {
+      let userData: Users = {
         email,
+        username
       };
   
       await addDoc(collection(db, "users"), {
@@ -80,6 +83,16 @@ export default function SignUpForm() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+        <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              type="username"
+              placeholder="john_doe"
+              required
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input

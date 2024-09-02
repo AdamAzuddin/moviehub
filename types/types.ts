@@ -9,3 +9,8 @@ export interface FormInputProps {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   }
   
+
+export interface Users{
+  username: string,
+  email: string
+}
