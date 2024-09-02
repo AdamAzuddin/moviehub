@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import SignInForm from '@/components/SignInForm';
 import SignUpForm from '@/components/SignUpForm';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -12,23 +14,23 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="auth-page flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="auth-page flex flex-col items-center justify-center min-h-screen">
       {isSignUp ? <SignUpForm /> : <SignInForm />}
       <div className="toggle-link">
         {isSignUp ? (
-          <p className='text-center pt-5'>
+          <Label className='text-center pt-5'>
             Already have an account?{' '}
-            <button onClick={toggleForm} className="link-button">
+            <Button onClick={toggleForm} className="link-button">
               Sign In
-            </button>
-          </p>
+            </Button>
+          </Label>
         ) : (
-          <p className='items-center pt-5'>
+          <Label  className='items-center pt-5'>
             Don&apos;t have an account?{' '}
             <button onClick={toggleForm} className="link-button">
               Sign Up
             </button>
-          </p>
+          </Label>
         )}
       </div>
     </div>
