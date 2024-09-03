@@ -1,5 +1,7 @@
 // src/types/type.ts
 
+import { ReactNode } from "react";
+
 export interface FormInputProps {
     id: string;
     type: 'text' | 'email' | 'password';
@@ -24,4 +26,8 @@ export interface LayoutProps {
 export interface ProfileAvatarProps {
   profilePicUrl?: string;
   altText?: string;
+}
+
+export interface AuthProviderProps {
+  children: ReactNode; // Include children prop
 }

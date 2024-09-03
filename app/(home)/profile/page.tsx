@@ -1,22 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
-import { User } from "firebase/auth";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import useStore from "@/store/store";
 
 const ProfilePage = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [profilePic, setProfilePic] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe(); // Cleanup the subscription on unmount
-  }, []);
+  const user = useStore((state) => state.user);
 
   const handleSignOut = async () => {
     try {

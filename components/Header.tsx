@@ -10,51 +10,13 @@ import {
 } from "@/components/ui/navigation-menu";
 import SearchButton from "./SearchButton";
 import React from "react";
-import { Auth, getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { auth, db } from "@/lib/firebase";
-import { getDocs, query, collection, where } from "firebase/firestore";
 import { ProfileAvatar } from "./ProfileAvatar";
+import useStore from "@/store/store";
 
 export default function Header() {
-  const [user, setUser] = useState<User | null>(null);
-  const [profilePic, setProfilePic] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe(); // Cleanup the subscription on unmount
-  }, []);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        try {
-          const q = query(
-            collection(db, "users"),
-            where("email", "==", user.email)
-          );
-          const userSnapshot = await getDocs(q);
-          if (!userSnapshot.empty) {
-            const userData = userSnapshot.docs[0].data();
-            setProfilePic(
-              userData.profilePic || "/images/default_profile_pic.jpg"
-            );
-            setUsername(userData.username);
-          } else {
-            console.error("User data not found in Firestore");
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [user]);
+  const user  = useStore((state) => state.user);
+  const profilePic = useStore((state) => state.profilePic);
+  const username = useStore((state) => state.username);
 
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8">
@@ -220,24 +182,3 @@ function MenuIcon(props: any) {
   );
 }
 
-function ShirtIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
-    </svg>
-  );
-}
-function useAuthState(auth: Auth): [any, any, any] {
-  throw new Error("Function not implemented.");
-}
