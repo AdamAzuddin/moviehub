@@ -1,16 +1,27 @@
 "use client";
 import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface UploadProfilePicProps {
   onFileSelect: (file: File | null) => void;
 }
 
-export default function UploadProfilePic({ onFileSelect }: UploadProfilePicProps) {
+export default function UploadProfilePic({
+  onFileSelect,
+}: UploadProfilePicProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
-  const [preview, setPreview] = useState<string>("/images/default_profile_pic.jpg");
+  const [preview, setPreview] = useState<string>(
+    "/images/default_profile_pic.jpg"
+  );
 
   const handleButtonClick = () => {
     document.getElementById("fileInput")?.click();
@@ -46,7 +57,7 @@ export default function UploadProfilePic({ onFileSelect }: UploadProfilePicProps
       </CardHeader>
       <CardContent className="flex flex-col items-center gap-4">
         <div className="grid gap-0.5">
-          <img
+          <Image
             src={preview}
             width={150}
             height={150}
@@ -58,10 +69,12 @@ export default function UploadProfilePic({ onFileSelect }: UploadProfilePicProps
             type="file"
             id="fileInput"
             onChange={handleFileChange}
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             accept="image/*"
           />
-          <Button size="sm" onClick={handleButtonClick}>Upload new picture</Button>
+          <Button size="sm" onClick={handleButtonClick}>
+            Upload new picture
+          </Button>
         </div>
         {error && <p className="text-red-500">{error}</p>}
       </CardContent>
