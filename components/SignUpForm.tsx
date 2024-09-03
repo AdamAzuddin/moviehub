@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { Users } from "@/types/types";
+import UploadProfilePic from "./UploadProfilePic";
 export default function SignUpForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -81,6 +82,7 @@ export default function SignUpForm() {
           Create an account by filling the form below
         </CardDescription>
       </CardHeader>
+      <UploadProfilePic/>
       <CardContent>
         <div className="space-y-4">
         <div className="space-y-2">
