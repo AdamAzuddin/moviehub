@@ -6,11 +6,13 @@ import {
   NavigationMenuList,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
+import SearchButton from "./SearchButton";
 
 export default function Header() {
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8">
       <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
+        {/* Mobile menu */}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">
@@ -45,7 +47,6 @@ export default function Header() {
               >
                 TV Series
               </Link>
-              {/* TODO: Add dropdown menu */}
               <Link
                 href="/watchlist"
                 className="flex w-full items-center py-2 text-lg font-semibold"
@@ -60,10 +61,17 @@ export default function Header() {
               >
                 Favourites
               </Link>
-              {/* TODO: Search bar TODO: Notification icon TODO: Profile Pic
+              <Link href={"/auth"}>
+                <Button variant="outline">Sign In</Button>
+              </Link>
+
+              {/* TODO: Notification icon TODO: Profile Pic
               if signed in */}
             </div>
           </SheetContent>
+          <div className="ml-auto justify-end lg:hidden items-center">
+            <SearchButton />
+          </div>
         </Sheet>
         <Link href="#" className="mr-6 hidden lg:flex" prefetch={false}>
           <ShirtIcon className="h-6 w-6" />
@@ -98,7 +106,6 @@ export default function Header() {
                 TV Series
               </Link>
             </NavigationMenuLink>
-            {/* TODO: Add dropdown menu */}
             <NavigationMenuLink asChild>
               <Link
                 href="/watchlist"
@@ -117,10 +124,13 @@ export default function Header() {
                 Favourites
               </Link>
             </NavigationMenuLink>
+
             {/*TODO: Search bar TODO: Notification icon TODO: Profile Pic if signed in*/}
           </NavigationMenuList>
         </NavigationMenu>
-        <div className="ml-auto flex gap-2">
+
+        <div className="hidden ml-auto lg:justify-end lg:flex items-center">
+          <SearchButton />
           <Link href={"/auth"}>
             <Button variant="outline">Sign In</Button>
           </Link>
