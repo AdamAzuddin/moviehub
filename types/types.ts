@@ -13,7 +13,8 @@ export interface FormInputProps {
 export interface Users{
   username: string,
   email: string,
-  uid:string
+  uid:string,
+  profilePic?: string
 }
 
 export interface LayoutProps {

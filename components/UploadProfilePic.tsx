@@ -1,39 +1,40 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function UploadProfilePic() {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+interface UploadProfilePicProps {
+  onFileSelect: (file: File | null) => void;
+}
+
+export default function UploadProfilePic({ onFileSelect }: UploadProfilePicProps) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
   const [preview, setPreview] = useState<string>("/images/default_profile_pic.jpg");
 
   const handleButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    document.getElementById("fileInput")?.click();
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check if the file is an image
       if (!file.type.startsWith("image/")) {
         setError("Please select an image file (jpg, png, etc.).");
         return;
       }
 
-      setError(""); // Clear any previous errors
+      setSelectedFile(file);
+      setError("");
 
-      // Update the preview with the selected image
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
 
-      // Handle the file upload logic here
-      console.log('Selected file:', file);
+      // Pass the selected file to the parent component
+      onFileSelect(file);
     }
   };
 
@@ -55,7 +56,7 @@ export default function UploadProfilePic() {
           />
           <input
             type="file"
-            ref={fileInputRef}
+            id="fileInput"
             onChange={handleFileChange}
             style={{ display: 'none' }}
             accept="image/*"

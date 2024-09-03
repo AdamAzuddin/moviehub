@@ -1,91 +1,69 @@
 "use client";
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
-import { Users } from "@/types/types";
 import UploadProfilePic from "./UploadProfilePic";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+
 export default function SignUpForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [username, setUsername] = useState("")
+  const [username, setUsername] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Check password length
+
     if (password.length < 6) {
       setPasswordError("Password must be at least 6 characters long.");
       return;
     }
-  
+
     try {
-      // Dynamically import Firebase SDK functions
-      const { createUserWithEmailAndPassword: dynamicCreateUserWithEmailAndPassword } = await import('firebase/auth');
-      const { collection, addDoc } = await import('firebase/firestore');
-  
-      console.log("Connecting to firestore");
-  
-      const userCredential = await dynamicCreateUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const { createUserWithEmailAndPassword } = await import('firebase/auth');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-  
-      // Proceed to add additional information to Firestore
-      await addUserToFirestore(user.uid, collection, addDoc);
-  
-      console.log("User signed up and added to Firestore successfully");
-      router.push("/"); // Redirect to profile page after sign up
+
+      let fileUrl = "";
+      if (selectedFile) {
+        const storageInstance = getStorage();
+        const fileRef = ref(storageInstance, `profile_pics/${user.uid}/${selectedFile.name}`);
+        await uploadBytes(fileRef, selectedFile);
+        fileUrl = await getDownloadURL(fileRef);
+      }
+
+      await addDoc(collection(db, "users"), {
+        uid: user.uid,
+        email: email,
+        username: username,
+        profilePic: fileUrl,
+      });
+
+      router.push("/");
     } catch (error) {
       console.error("Error signing up:", error);
-      setPassword(''); // Reset password input
+      setPassword('');
     }
   };
-  
 
-  const addUserToFirestore = async (userId: string, collection: Function, addDoc: Function) => {
-    try {
-      let userData: Users = {
-        uid: userId,
-        email: email,
-        username: username
-      };
-  
-      await addDoc(collection(db, "users"), {
-        ...userData,
-      });
-    } catch (error) {
-      console.error("Error adding user to Firestore:", error);
-      throw error;
-    }
-  };
-  
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
-        <CardDescription>
-          Create an account by filling the form below
-        </CardDescription>
+        <CardDescription>Create an account by filling the form below</CardDescription>
       </CardHeader>
-      <UploadProfilePic/>
+      <UploadProfilePic onFileSelect={setSelectedFile} />
       <CardContent>
         <div className="space-y-4">
-        <div className="space-y-2">
+          <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
@@ -111,9 +89,7 @@ export default function SignUpForm() {
               id="password"
               type="password"
               required
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
             />
             {passwordError && <p className="text-red-500">{passwordError}</p>}
           </div>
