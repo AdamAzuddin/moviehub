@@ -1,6 +1,8 @@
-"use client"
+"use client";
+
 import { TMDB_BASE_URL } from '@/constants/constants';
 import useSWR from 'swr';
+import MovieCarousel from '@/components/MovieCarousel'; // Adjust the path as needed
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -10,14 +12,10 @@ const MoviesPage = () => {
   if (error) return <div>Failed to load</div>;
   if (!data) return <div>Loading...</div>;
 
+  console.log(data)
   return (
     <div>
-      <h1>Movies</h1>
-      <ul>
-        {data.results.map((movie: { id: number; title: string }) => (
-          <li key={movie.id}>{movie.title}</li>
-        ))}
-      </ul>
+      <MovieCarousel movies={data.results} />
     </div>
   );
 };
