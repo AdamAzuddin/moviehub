@@ -122,9 +122,6 @@ export default function Header() {
               ) : (
                 <></>
               )}
-
-              {/* TODO: Notification icon TODO: Profile Pic
-              if signed in */}
             </div>
           </SheetContent>
           <div className="ml-auto justify-end lg:hidden items-center">
@@ -178,8 +175,6 @@ export default function Header() {
                 Favourites
               </Link>
             </NavigationMenuLink>
-
-            {/*TODO: Search bar TODO: Notification icon TODO: Profile Pic if signed in*/}
           </NavigationMenuList>
         </NavigationMenu>
 
