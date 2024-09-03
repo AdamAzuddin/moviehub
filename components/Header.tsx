@@ -1,3 +1,5 @@
+"use client";
+
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -7,8 +9,61 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import SearchButton from "./SearchButton";
+import React from "react";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { useEffect } from "react";
+import { auth, db } from "@/lib/firebase";
+import { getDocs, query, collection, where } from "firebase/firestore";
+import { Users } from "@/types/types";
 
 export default function Header() {
+  const [user, setUser] = React.useState<User | null>(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
+      setUser(user);
+      if (user) {
+        try {
+          if (!db) {
+            console.error("Firebase is not initialized.");
+            return;
+          }
+
+          const usersRef = collection(db, "users");
+          const querySnapshot = await getDocs(
+            query(usersRef, where("uid", "==", user.uid))
+          );
+
+          if (!querySnapshot.empty) {
+            // Assuming there's only one document with the given uid
+            const userData = querySnapshot.docs[0].data() as User; // Cast to UserDetails
+            setUser(userData);
+          } else {
+            console.log("No user document found with the provided uid.");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        setUser(null); // Reset userType if no user is signed in
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      console.log("User signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8">
       <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
@@ -61,9 +116,15 @@ export default function Header() {
               >
                 Favourites
               </Link>
-              <Link href={"/auth"}>
-                <Button variant="outline">Sign In</Button>
-              </Link>
+              {!user ? (
+                <Link href={"/auth"}>
+                  <Button variant="outline">Sign In</Button>
+                </Link>
+              ) : (
+                <Button variant="secondary" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              )}
 
               {/* TODO: Notification icon TODO: Profile Pic
               if signed in */}
@@ -131,9 +192,15 @@ export default function Header() {
 
         <div className="hidden ml-auto lg:justify-end lg:flex items-center">
           <SearchButton />
-          <Link href={"/auth"}>
-            <Button variant="outline">Sign In</Button>
-          </Link>
+          {!user ? (
+            <Link href={"/auth"}>
+              <Button variant="outline">Sign In</Button>
+            </Link>
+          ) : (
+            <Button variant="secondary" onClick={handleSignOut}>
+              Sign Out
+            </Button>
+          )}
         </div>
       </header>
     </div>

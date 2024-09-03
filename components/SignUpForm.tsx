@@ -59,12 +59,12 @@ export default function SignUpForm() {
   const addUserToFirestore = async (userId: string, collection: Function, addDoc: Function) => {
     try {
       let userData: Users = {
-        email,
-        username
+        uid: userId,
+        email: email,
+        username: username
       };
   
       await addDoc(collection(db, "users"), {
-        uid: userId,
         ...userData,
       });
     } catch (error) {
