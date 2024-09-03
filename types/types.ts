@@ -20,3 +20,8 @@ export interface Users{
 export interface LayoutProps {
   children: React.ReactNode;
 }
+
+export interface ProfileAvatarProps {
+  profilePicUrl?: string;
+  altText?: string;
+}

@@ -10,60 +10,52 @@ import {
 } from "@/components/ui/navigation-menu";
 import SearchButton from "./SearchButton";
 import React from "react";
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { useEffect } from "react";
+import { Auth, getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { getDocs, query, collection, where } from "firebase/firestore";
-import { Users } from "@/types/types";
+import { ProfileAvatar } from "./ProfileAvatar";
 
 export default function Header() {
-  const [user, setUser] = React.useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [profilePic, setProfilePic] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
 
   useEffect(() => {
-    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
 
-    const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
-      setUser(user);
+    return () => unsubscribe(); // Cleanup the subscription on unmount
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
       if (user) {
         try {
-          if (!db) {
-            console.error("Firebase is not initialized.");
-            return;
-          }
-
-          const usersRef = collection(db, "users");
-          const querySnapshot = await getDocs(
-            query(usersRef, where("uid", "==", user.uid))
+          const q = query(
+            collection(db, "users"),
+            where("email", "==", user.email)
           );
-
-          if (!querySnapshot.empty) {
-            // Assuming there's only one document with the given uid
-            const userData = querySnapshot.docs[0].data() as User; // Cast to UserDetails
-            setUser(userData);
+          const userSnapshot = await getDocs(q);
+          if (!userSnapshot.empty) {
+            const userData = userSnapshot.docs[0].data();
+            setProfilePic(
+              userData.profilePic || "/images/default_profile_pic.jpg"
+            );
+            setUsername(userData.username);
           } else {
-            console.log("No user document found with the provided uid.");
+            console.error("User data not found in Firestore");
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
-      } else {
-        setUser(null); // Reset userType if no user is signed in
       }
-    });
-
-    return () => {
-      unsubscribe();
     };
-  }, []);
 
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-      console.log("User signed out successfully");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
+    fetchUserData();
+  }, [user]);
+
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8">
       <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
@@ -77,9 +69,16 @@ export default function Header() {
           </SheetTrigger>
           <SheetContent side="left">
             <Link href="#" prefetch={false}>
-              <ShirtIcon className="h-6 w-6" />
               <span className="sr-only">ShadCN</span>
             </Link>
+            <Link className="my-4" href={"/profile"}>
+              <ProfileAvatar
+                profilePicUrl={
+                  profilePic ? profilePic : "/images/default_profile_pic.jpg"
+                }
+              />
+            </Link>
+            <p>@{username}</p>
             <div className="grid gap-2 py-6">
               <Link
                 href="#"
@@ -121,9 +120,7 @@ export default function Header() {
                   <Button variant="outline">Sign In</Button>
                 </Link>
               ) : (
-                <Button variant="secondary" onClick={handleSignOut}>
-                  Sign Out
-                </Button>
+                <></>
               )}
 
               {/* TODO: Notification icon TODO: Profile Pic
@@ -134,10 +131,6 @@ export default function Header() {
             <SearchButton />
           </div>
         </Sheet>
-        <Link href="#" className="mr-6 hidden lg:flex" prefetch={false}>
-          <ShirtIcon className="h-6 w-6" />
-          <span className="sr-only">ShadCN</span>
-        </Link>
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList>
             <NavigationMenuLink asChild>
@@ -197,9 +190,13 @@ export default function Header() {
               <Button variant="outline">Sign In</Button>
             </Link>
           ) : (
-            <Button variant="secondary" onClick={handleSignOut}>
-              Sign Out
-            </Button>
+            <Link href={"/profile"}>
+              <ProfileAvatar
+                profilePicUrl={
+                  profilePic ? profilePic : "/images/default_profile_pic.jpg"
+                }
+              />
+            </Link>
           )}
         </div>
       </header>
@@ -245,4 +242,7 @@ function ShirtIcon(props: any) {
       <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
     </svg>
   );
+}
+function useAuthState(auth: Auth): [any, any, any] {
+  throw new Error("Function not implemented.");
 }
