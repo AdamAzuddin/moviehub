@@ -6,6 +6,9 @@ import { Heart, Plus } from "lucide-react";
 import { TMDB_BASE_URL } from "@/constants/constants";
 import MovieCarousel from "@/components/MovieCarousel";
 import { useState } from "react";
+import AddFavsButton from "./AddFavsButton";
+import useStore from "@/store/store";
+import AddWatchlistButton from "./AddWatchlistButton";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -16,6 +19,7 @@ interface MovieDetailsProps {
 const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
   // State to handle image error
   const [imageError, setImageError] = useState(false);
+  const user = useStore((state) => state.user);
 
   // Fetch movie details
   const { data: movieDetails, error: movieError } = useSWR(
@@ -51,7 +55,11 @@ const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
       </div>
       <div className="flex flex-col md:flex-row gap-8 mt-8">
         <Image
-          src={imageError ? "/images/movie-poster-placeholder.png" : `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
+          src={
+            imageError
+              ? "/images/movie-poster-placeholder.png"
+              : `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`
+          }
           alt={movieDetails.title}
           width={500}
           height={750}
@@ -70,14 +78,14 @@ const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
             <strong>Genres:</strong>{" "}
             {movieDetails.genres.map((genre: any) => genre.name).join(", ")}
           </p>
-          <div className="mt-4 flex gap-2">
-            <button className="bg-red-600 text-white p-3 rounded-full shadow-md hover:bg-red-700 transition">
-              <Heart className="w-4 h-4" />
-            </button>
-            <button className="bg-blue-600 text-white p-3 rounded-full shadow-md hover:bg-blue-700 transition">
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
+          {user ? (
+            <div className="mt-4 flex gap-2">
+              <AddFavsButton movieId={movieId} />
+              <AddWatchlistButton movieId={movieId} />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       <div className="mt-8">

@@ -45,6 +45,8 @@ export default function SignUpForm() {
         email: email,
         username: username,
         profilePic: fileUrl,
+        watchlist: [],
+        favourites:[]
       });
 
       router.push("/");

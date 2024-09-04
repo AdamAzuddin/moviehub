@@ -7,7 +7,7 @@ import useStore from '@/store/store';
 import { AuthProviderProps } from '@/types/types';
 
 const AuthProvider= ({ children }:AuthProviderProps) => {
-  const { setUser, setProfilePic, setUsername } = useStore();
+  const { setUser, setProfilePic, setUsername, setUid } = useStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -17,13 +17,14 @@ const AuthProvider= ({ children }:AuthProviderProps) => {
         try {
           const q = query(
             collection(db, 'users'),
-            where('email', '==', currentUser.email)
+            where('uid', '==', currentUser.uid)
           );
           const userSnapshot = await getDocs(q);
           if (!userSnapshot.empty) {
             const userData = userSnapshot.docs[0].data();
             setProfilePic(userData.profilePic || '/images/default_profile_pic.jpg');
             setUsername(userData.username || '');
+            setUid(currentUser.uid);
           } else {
             console.error('User data not found in Firestore');
           }
