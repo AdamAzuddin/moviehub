@@ -2,35 +2,31 @@
 
 import useSWR from "swr";
 import Image from "next/image";
-import { Heart, Plus } from "lucide-react";
 import { TMDB_BASE_URL } from "@/constants/constants";
 import MovieCarousel from "@/components/MovieCarousel";
 import { useState } from "react";
 import AddFavsButton from "./AddFavsButton";
 import useStore from "@/store/store";
 import AddWatchlistButton from "./AddWatchlistButton";
+import { MovieDetails } from "@/types/types";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-interface MovieDetailsProps {
-  movieId: string;
-}
-
-const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
+const ClientMovieDetails = ({ movieId , type}: MovieDetails) => {
   // State to handle image error
   const [imageError, setImageError] = useState(false);
   const user = useStore((state) => state.user);
 
   // Fetch movie details
   const { data: movieDetails, error: movieError } = useSWR(
-    `${TMDB_BASE_URL}/movie/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+    `${TMDB_BASE_URL}/${type}/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
     fetcher
   );
 
   // Fetch similar movies
   const { data: similarMovies, error: similarError } = useSWR(
     movieId
-      ? `${TMDB_BASE_URL}/movie/${movieId}/similar?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+      ? `${TMDB_BASE_URL}/${type}/${movieId}/similar?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
       : null,
     fetcher
   );
@@ -80,8 +76,8 @@ const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
           </p>
           {user ? (
             <div className="mt-4 flex gap-2">
-              <AddFavsButton movieId={movieId} />
-              <AddWatchlistButton movieId={movieId} />
+              <AddFavsButton movieId={movieId} type={type}/>
+              <AddWatchlistButton movieId={movieId} type={type}/>
             </div>
           ) : (
             <></>
@@ -92,6 +88,7 @@ const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
         <MovieCarousel
           movies={similarMovies.results}
           title="You may also like"
+          type={type}
         />
       </div>
     </div>

@@ -47,8 +47,6 @@ export default function SignInForm() {
         const userData = userSnapshot.docs[0].data();
         // Determine the redirect route based on user type from Firestore
         let redirectRoute = "/"; // Default route
-        const userType = userData.userType; // Assuming userType is a field in the user document
-        console.log("User signed in successfully");
         router.push(redirectRoute); // Redirect to appropriate route after sign in
       } else {
         console.error("User data not found in Firestore");

@@ -35,15 +35,15 @@ const Home = () => {
       <MovieBanner movies={bannerMovies.results} />
 
       {/* Mixed carousels of Movies and TV Series */}
-      <MovieCarousel movies={popularMovies.results} title="Popular Movies" />
-      <MovieCarousel movies={dramaSeries.results} title="Drama TV Series" />
-      <MovieCarousel movies={topRatedMovies.results} title="Top Rated Movies" />
-      <MovieCarousel movies={sciFiSeries.results} title="Sci-Fi TV Series" />
-      <MovieCarousel movies={actionMovies.results} title="Action Movies" />
-      <MovieCarousel movies={comedySeries.results} title="Comedy TV Series" />
-      <MovieCarousel movies={comedyMovies.results} title="Comedy Movies" />
-      <MovieCarousel movies={horrorMovies.results} title="Horror Movies" />
-      <MovieCarousel movies={popularSeries.results} title="Popular TV Series" />
+      <MovieCarousel movies={popularMovies.results} title="Popular Movies" type='movie'/>
+      <MovieCarousel movies={dramaSeries.results} title="Drama TV Series"  type='tv'/>
+      <MovieCarousel movies={topRatedMovies.results} title="Top Rated Movies" type='movie' />
+      <MovieCarousel movies={sciFiSeries.results} title="Sci-Fi TV Series"  type='tv'/>
+      <MovieCarousel movies={actionMovies.results} title="Action Movies"  type='movie'/>
+      <MovieCarousel movies={comedySeries.results} title="Comedy TV Series"  type='tv'/>
+      <MovieCarousel movies={comedyMovies.results} title="Comedy Movies"  type='movie'/>
+      <MovieCarousel movies={horrorMovies.results} title="Horror Movies"  type='movie'/>
+      <MovieCarousel movies={popularSeries.results} title="Popular TV Series"  type='tv'/>
     </main>
   );
 };

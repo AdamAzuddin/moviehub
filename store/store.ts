@@ -1,23 +1,27 @@
 import { create } from "zustand";
 import { User } from "firebase/auth";
 
+interface FavouriteItem {
+  movieId: string;
+  type: "movie" | "tv";
+}
+
 interface StoreState {
   user: User | null;
   profilePic: string;
   username: string;
   uid: string;
-  favourites: string[];
-  watchlist: string[];
+  favourites: FavouriteItem[];
+  watchlist: FavouriteItem[];
   setUser: (user: User | null) => void;
   setProfilePic: (profilePic: string) => void;
   setUsername: (username: string) => void;
   setUid: (uid: string) => void;
-  addToFavourites: (movieId: string) => void;
-  removeFromFavourites: (movieId: string) => void;
-  addToWatchlist: (movieId: string) => void;
-  removeFromWatchlist: (movieId: string) => void;
+  addToFavourites: (item: FavouriteItem) => void;
+  removeFromFavourites: (item: FavouriteItem) => void;
+  addToWatchlist: (item: FavouriteItem) => void;
+  removeFromWatchlist: (item: FavouriteItem) => void;
 }
-
 
 const useStore = create<StoreState>((set) => ({
   user: null,
@@ -29,18 +33,18 @@ const useStore = create<StoreState>((set) => ({
   setUser: (user) => set({ user }),
   setProfilePic: (profilePic) => set({ profilePic }),
   setUsername: (username) => set({ username }),
-  setUid: (uid: string) => set({ uid }),
-  addToFavourites: (movieId: string) => set((state) => ({
-    favourites: [...state.favourites, movieId],
+  setUid: (uid) => set({ uid }),
+  addToFavourites: (item) => set((state) => ({
+    favourites: [...state.favourites, item]
   })),
-  removeFromFavourites: (movieId: string) => set((state) => ({
-    favourites: state.favourites.filter((id) => id !== movieId),
+  removeFromFavourites: (item) => set((state) => ({
+    favourites: state.favourites.filter(i => i.movieId !== item.movieId || i.type !== item.type)
   })),
-  addToWatchlist: (movieId: string) => set((state) => ({
-    watchlist: [...state.watchlist, movieId],
+  addToWatchlist: (item) => set((state) => ({
+    watchlist: [...state.watchlist, item]
   })),
-  removeFromWatchlist: (movieId: string) => set((state) => ({
-    watchlist: state.watchlist.filter((id) => id !== movieId),
+  removeFromWatchlist: (item) => set((state) => ({
+    watchlist: state.watchlist.filter(i => i.movieId !== item.movieId || i.type !== item.type)
   })),
 }));
 

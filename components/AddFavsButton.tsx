@@ -2,15 +2,23 @@ import React from "react";
 import { Heart } from "lucide-react";
 import useStore from "@/store/store";
 import { db } from "@/lib/firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs } from "firebase/firestore";
-import { useAuth } from "@/hooks/useAuth"; // Ensure this hook is used properly
+import {
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { useAuth } from "@/hooks/useAuth";
+import { MovieDetails } from "@/types/types";
 
-const AddFavsButton = ({ movieId }: { movieId: string }) => {
+const AddFavsButton: React.FC<MovieDetails> = ({ movieId, type }) => {
   const { user } = useAuth(); // Get the current authenticated user
   const favourites = useStore((state) => state.favourites);
   const addToFavourites = useStore((state) => state.addToFavourites);
   const removeFromFavourites = useStore((state) => state.removeFromFavourites);
-
 
   const handleClick = async () => {
     if (!user) {
@@ -28,24 +36,29 @@ const AddFavsButton = ({ movieId }: { movieId: string }) => {
         // Assuming there's only one document per user
         const userDocRef = userSnapshot.docs[0].ref;
 
-        // Check if the movie is already in favourites
-        const isFavourite = favourites.includes(movieId);
+        // Create an item object with movieId and type
+        const item = { movieId, type };
+
+        // Check if the item is already in favourites
+        const isFavourite = favourites.some(
+          (favItem) => favItem.movieId === movieId && favItem.type === type
+        );
 
         if (isFavourite) {
           // Remove from favourites
           await updateDoc(userDocRef, {
-            favourites: arrayRemove(movieId),
+            favourites: arrayRemove(item),
           });
-          removeFromFavourites(movieId);
+          removeFromFavourites(item); // Pass the entire item object
         } else {
           // Add to favourites
           await updateDoc(userDocRef, {
-            favourites: arrayUnion(movieId),
+            favourites: arrayUnion(item),
           });
-          addToFavourites(movieId);
+          addToFavourites(item); // Pass the entire item object
         }
       } else {
-        console.error('User data not found in Firestore');
+        console.error("User data not found in Firestore");
       }
     } catch (error) {
       console.error("Error updating favourites:", error);
