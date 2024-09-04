@@ -2,7 +2,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div>Your watchlist is empty for now</div>
   )
 }
 
