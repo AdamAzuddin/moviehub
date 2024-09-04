@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import useStore from '@/store/store';
 import { useAuth } from '@/hooks/useAuth';
 import { fetchMovieDetails } from '@/lib/tmdb';
@@ -39,10 +40,15 @@ const FavouritesPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((item) => (
               <div key={item.id} className="p-4 border rounded-lg shadow-md">
-                <img
+                <Image
                   src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "/images/movie-poster-placeholder.png"}
                   alt={item.title || item.name}
-                  className="w-full h-auto"
+                  width={500}
+                  height={750}
+                  layout="responsive"
+                  className="rounded-lg"
+                  placeholder="blur"
+                  blurDataURL="/images/movie-poster-placeholder.png"
                 />
                 <h2 className="text-xl font-bold mt-2">{item.title || item.name}</h2>
                 {/* Add more item details as needed */}

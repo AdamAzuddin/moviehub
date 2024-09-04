@@ -35,6 +35,7 @@ const AuthProvider= ({ children }:AuthProviderProps) => {
         // Reset profilePic and username if user is null
         setProfilePic('/images/default_profile_pic.jpg');
         setUsername('');
+        setUid('')
       }
     });
 
