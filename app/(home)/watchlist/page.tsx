@@ -43,8 +43,8 @@ const WatchlistPage = () => {
                 <Image
                   src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "/images/movie-poster-placeholder.png"}
                   alt={item.title || item.name}
-                  width={500}
-                  height={750}
+                  width={200}
+                  height={300}
                   className="w-full h-auto"
                   placeholder="blur"
                   blurDataURL="/images/movie-poster-placeholder.png"
