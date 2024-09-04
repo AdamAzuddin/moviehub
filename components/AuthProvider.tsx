@@ -40,7 +40,7 @@ const AuthProvider= ({ children }:AuthProviderProps) => {
     });
 
     return () => unsubscribe();
-  }, [setUser, setProfilePic, setUsername]);
+  }, [setUser, setProfilePic, setUsername, setUid]);
 
   return <>{children}</>;
 };
