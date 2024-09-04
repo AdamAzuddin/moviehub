@@ -33,14 +33,14 @@ export default function Header() {
             <Link href="#" prefetch={false}>
               <span className="sr-only">ShadCN</span>
             </Link>
-            <Link className="my-4" href={"/profile"}>
+            <Link href={"/profile"}>
               <ProfileAvatar
                 profilePicUrl={
                   profilePic ? profilePic : "/images/default_profile_pic.jpg"
                 }
               />
             </Link>
-            <p>@{username}</p>
+            <p className="mt-6 text-sm">@{username}</p>
             <div className="grid gap-2 py-6">
               <Link
                 href="#"
