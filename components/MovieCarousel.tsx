@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/carousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-// Define the type for movie prop
 interface Movie {
   id: number;
   title: string;
@@ -20,14 +19,15 @@ interface Movie {
 
 interface MovieCarouselProps {
   movies: Movie[];
+  title: string;
 }
 
-export default function MovieCarousel({ movies }: MovieCarouselProps) {
+export default function MovieCarousel({ movies, title }: MovieCarouselProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-4 text-white">Popular Movies</h2>
+      <h2 className="text-2xl font-bold mb-4 text-white">{title}</h2>
       <Carousel
         opts={{
           align: "start",
