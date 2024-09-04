@@ -1,4 +1,3 @@
-// components/ClientMovieDetails.tsx
 "use client";
 
 import useSWR from "swr";
@@ -6,6 +5,7 @@ import Image from "next/image";
 import { Heart, Plus } from "lucide-react";
 import { TMDB_BASE_URL } from "@/constants/constants";
 import MovieCarousel from "@/components/MovieCarousel";
+import { useState } from "react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -14,6 +14,9 @@ interface MovieDetailsProps {
 }
 
 const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
+  // State to handle image error
+  const [imageError, setImageError] = useState(false);
+
   // Fetch movie details
   const { data: movieDetails, error: movieError } = useSWR(
     `${TMDB_BASE_URL}/movie/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
@@ -36,6 +39,9 @@ const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
     return <div>Loading...</div>;
   }
 
+  // Handle image load error
+  const handleImageError = () => setImageError(true);
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       <div className="relative">
@@ -45,11 +51,12 @@ const ClientMovieDetails = ({ movieId }: MovieDetailsProps) => {
       </div>
       <div className="flex flex-col md:flex-row gap-8 mt-8">
         <Image
-          src={`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
+          src={imageError ? "/images/movie-poster-placeholder.png" : `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
           alt={movieDetails.title}
           width={500}
           height={750}
           className="w-full md:w-1/4 h-auto object-cover rounded-md shadow-lg"
+          onError={handleImageError}
         />
         <div className="text-white md:w-2/3">
           <p className="mb-4">{movieDetails.overview}</p>
