@@ -1,7 +1,7 @@
-// components/MovieCarousel.tsx
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation'; // Import useRouter for navigation
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -21,9 +21,14 @@ interface MovieCarouselProps {
 export default function MovieCarousel({ movies, title }: MovieCarouselProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [imageError, setImageError] = useState<{ [key: number]: boolean }>({});
+  const router = useRouter(); // Initialize useRouter
 
   const handleImageError = (id: number) => {
     setImageError((prev) => ({ ...prev, [id]: true }));
+  };
+
+  const handleMovieClick = (movieId: number) => {
+    router.push(`/details/${movieId}`); // Navigate to the movie details page
   };
 
   return (
@@ -43,9 +48,10 @@ export default function MovieCarousel({ movies, title }: MovieCarouselProps) {
               className="pl-1 sm:pl-2 md:pl-3 lg:pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
             >
               <div
-                className="relative group"
+                className="relative group cursor-pointer" // Added cursor-pointer for clickable
                 onMouseEnter={() => setHoveredIndex(movie.id)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() => handleMovieClick(movie.id)} // Added click handler
               >
                 <Card className="border-0">
                   <CardContent className="p-0 relative">
