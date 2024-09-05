@@ -22,6 +22,7 @@ interface StoreState {
   addToWatchlist: (item: FavouriteItem) => void;
   removeFromWatchlist: (item: FavouriteItem) => void;
   resetFavourites: () => void;
+  resetWatchlist: () => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -48,6 +49,7 @@ const useStore = create<StoreState>((set) => ({
   removeFromWatchlist: (item) => set((state) => ({
     watchlist: state.watchlist.filter(i => i.movieId !== item.movieId || i.type !== item.type)
   })),
+  resetWatchlist: () => set({ watchlist: [] })
 }));
 
 export default useStore;

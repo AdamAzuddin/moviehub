@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import useStore from "@/store/store";
 import { db } from "@/lib/firebase";
@@ -19,10 +19,10 @@ interface AddWatchlistButtonProps {
 }
 
 const AddWatchlistButton: React.FC<AddWatchlistButtonProps> = ({ movieId, type }) => {
+  const [error, setError] = useState("")
   const { user } = useAuth(); // Get the current authenticated user
   const watchlist = useStore((state) => state.watchlist);
   const addToWatchlist = useStore((state) => state.addToWatchlist);
-  const removeFromWatchlist = useStore((state) => state.removeFromWatchlist);
 
   const handleClick = async () => {
     if (!user) {
@@ -49,11 +49,7 @@ const AddWatchlistButton: React.FC<AddWatchlistButtonProps> = ({ movieId, type }
         );
   
         if (isInWatchlist) {
-          // Remove from watchlist
-          await updateDoc(userDocRef, {
-            watchlist: arrayRemove(item),
-          });
-          removeFromWatchlist(item); // Pass the entire item object
+          setError("This movie/TV show is already in your watchlist.");
         } else {
           // Add to watchlist
           await updateDoc(userDocRef, {
@@ -78,6 +74,9 @@ const AddWatchlistButton: React.FC<AddWatchlistButtonProps> = ({ movieId, type }
       >
         <Plus className="w-4 h-4" />
       </button>
+      {error && (
+        <p className="text-red-500 mt-2">{error}</p>
+      )}
     </div>
   );
 };
