@@ -1,7 +1,8 @@
 import React from "react";
-import Image from 'next/image';
+import Image from "next/image";
 import { MovieDetails } from "@/types/types";
 import useMovieNavigation from "@/hooks/useMovieNavigation";
+import MinusCircleIcon from "./icons/MinusCircleIcon";
 
 // Define the props type
 interface ListsItemProps {
@@ -12,10 +13,9 @@ const ListsItemComponent: React.FC<ListsItemProps> = ({ item }) => {
   const { handleMovieClick } = useMovieNavigation();
 
   return (
-    <div>
+    <div className="relative p-4 border rounded-lg shadow-md flex flex-col">
       <div
         key={item.id}
-        className="p-4 border rounded-lg shadow-md"
         onClick={() => handleMovieClick(item.id, item.filmType)}
       >
         <Image
@@ -32,6 +32,16 @@ const ListsItemComponent: React.FC<ListsItemProps> = ({ item }) => {
           placeholder="blur"
           blurDataURL="/images/movie-poster-placeholder.png"
         />
+      </div>
+
+      {/* Title and button container */}
+      <div className="flex justify-between items-center mt-2">
+        <p className="text-left text-lg font-semibold">
+          {item.title || item.name}
+        </p>
+        <button className="text-red-500">
+          <MinusCircleIcon />
+        </button>
       </div>
     </div>
   );
