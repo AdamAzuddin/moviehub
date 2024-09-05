@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Heart } from "lucide-react";
 import useStore from "@/store/store";
 import { db } from "@/lib/firebase";
 import {
   updateDoc,
   arrayUnion,
-  arrayRemove,
   collection,
   query,
   where,
@@ -13,16 +12,17 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
 import { MovieDetails } from "@/types/types";
+import { ToastContainer, toast } from 'react-toastify';
 
 const AddFavsButton: React.FC<MovieDetails> = ({ movieId, type }) => {
   const { user } = useAuth(); // Get the current authenticated user
   const favourites = useStore((state) => state.favourites);
   const addToFavourites = useStore((state) => state.addToFavourites);
-  const removeFromFavourites = useStore((state) => state.removeFromFavourites);
+  const [error, setError] = useState<string | null>(null); // Error state for user feedback
 
   const handleClick = async () => {
     if (!user) {
-      console.log("No user is logged in.");
+      setError("You need to be logged in to add to favourites.");
       return;
     }
 
@@ -45,22 +45,21 @@ const AddFavsButton: React.FC<MovieDetails> = ({ movieId, type }) => {
         );
 
         if (isFavourite) {
-          // Remove from favourites
-          await updateDoc(userDocRef, {
-            favourites: arrayRemove(item),
-          });
-          removeFromFavourites(item); // Pass the entire item object
+          // If already in favourites, set error message
+          setError("This movie/TV show is already in your favourites.");
         } else {
           // Add to favourites
           await updateDoc(userDocRef, {
             favourites: arrayUnion(item),
           });
           addToFavourites(item); // Pass the entire item object
+          setError(null); // Clear any previous error messages
         }
       } else {
-        console.error("User data not found in Firestore");
+        setError("User data not found in Firestore.");
       }
     } catch (error) {
+      setError("Error updating favourites. Please try again.");
       console.error("Error updating favourites:", error);
     }
   };
@@ -73,6 +72,9 @@ const AddFavsButton: React.FC<MovieDetails> = ({ movieId, type }) => {
       >
         <Heart className="w-4 h-4" />
       </button>
+      {error && (
+        <p className="text-red-500 mt-2">{error}</p>
+      )}
     </div>
   );
 };
