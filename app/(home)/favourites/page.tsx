@@ -10,6 +10,7 @@ import { db } from "@/lib/firebase";
 import useMovieNavigation from "@/hooks/useMovieNavigation";
 import { MovieDetails } from "@/types/types";
 import { ListsItem } from "@/types/types";
+import ListsItemComponent from "@/components/ListsItem";
 
 // Fetch favorites from Firebase
 const fetchFavouritesFromFirebase = async (
@@ -88,29 +89,7 @@ const FavouritesPage: React.FC = () => {
           <h1 className="text-2xl lg:text-4xl font-bold">Your Favourites</h1>
           <div className="flex">
             {items.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 border rounded-lg shadow-md"
-                onClick={() => handleMovieClick(item.id, item.filmType)}
-              >
-                <Image
-                  src={
-                    item.poster_path
-                      ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-                      : "/images/movie-poster-placeholder.png"
-                  }
-                  alt={item.title || item.name || "Movie Poster"}
-                  width={200}
-                  height={300}
-                  layout="responsive"
-                  className="rounded-lg"
-                  placeholder="blur"
-                  blurDataURL="/images/movie-poster-placeholder.png"
-                />
-                <h2 className="text-xl font-bold mt-2">
-                  {item.title || item.name}
-                </h2>
-              </div>
+              <ListsItemComponent key={item.id} item={item} />
             ))}
           </div>
         </div>
