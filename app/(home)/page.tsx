@@ -32,7 +32,7 @@ const Home = () => {
   return (
     <main>
       {/* MovieBanner at the top */}
-      <MovieBanner movies={bannerMovies.results} />
+      <MovieBanner movies={bannerMovies.results} type='movie'/>
 
       {/* Mixed carousels of Movies and TV Series */}
       <MovieCarousel movies={popularMovies.results} title="Popular Movies" type='movie'/>

@@ -4,22 +4,23 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { Movie } from "@/types/types";
 import ChevronLeftIcon from '@/components/icons/ChevronLeft';
 import ChevronRightIcon from '@/components/icons/ChevronRight';
+import { placeholderImage } from '@/constants/constants';
+import useMovieNavigation from '@/hooks/useMovieNavigation';
 
-const placeholderImage = "/path/to/placeholder-image.jpg"; // Adjust the path to your placeholder image
 
-export default function MovieBanner({ movies }: { movies: Movie[] }) {
-  const router = useRouter();
+interface MovieBannerProps {
+  movies: Movie[];
+  type: 'movie' | 'tv';
+}
 
-  const handleMovieClick = (movieId: number) => {
-    router.push(`/details/${movieId}`);
-  };
-
+export default function MovieBanner({ movies, type }: MovieBannerProps) {
+  const {handleMovieClick} = useMovieNavigation();
   return (
     <div className="w-full max-w-6xl mx-auto py-12 md:py-16 lg:py-20">
       <Carousel className="w-full">
         <CarouselContent>
           {movies.map((movie: Movie) => (
-            <CarouselItem key={movie.id} onClick={() => handleMovieClick(movie.id)} className="cursor-pointer">
+            <CarouselItem key={movie.id} onClick={() => handleMovieClick(movie.id,type)} className="cursor-pointer">
               <div className="relative rounded-lg overflow-hidden shadow-lg">
                 <Image
                   src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
