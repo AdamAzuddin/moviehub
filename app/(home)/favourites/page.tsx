@@ -65,7 +65,7 @@ const FavouritesPage: React.FC = () => {
         addToFavourites(item);
       });
     }
-  }, [data, addToFavourites]);
+  }, [data, addToFavourites, resetFavourites]);
 
   // Fetch the details of favourite movies/TV shows
   useEffect(() => {
