@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import useStore from '@/store/store';
@@ -7,6 +8,7 @@ import { fetchMovieDetails } from '@/lib/tmdb';
 import useSWR from 'swr';
 import { query, where, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import useMovieNavigation from '@/hooks/useMovieNavigation';
 
 // Define types
 interface WatchlistItem {
@@ -19,6 +21,7 @@ interface MovieDetails {
   title?: string;
   name?: string;
   poster_path?: string;
+  filmType: 'movie' | 'tv'; // Corrected field name
 }
 
 // Fetch watchlist from Firebase
@@ -43,6 +46,7 @@ const WatchlistPage: React.FC = () => {
   const addToWatchlist = useStore((state) => state.addToWatchlist); // Zustand action for adding to watchlist
   const watchlist = useStore((state) => state.watchlist); // Zustand watchlist array
   const [items, setItems] = useState<MovieDetails[]>([]); // State for storing movie/TV details
+  const { handleMovieClick } = useMovieNavigation(); // Use the custom hook
 
   // Use SWR for caching with types
   const { data, error } = useSWR<WatchlistItem[]>(user ? user.uid : null, fetcher);
@@ -63,11 +67,12 @@ const WatchlistPage: React.FC = () => {
       if (!watchlist || watchlist.length === 0) return;
 
       try {
-        const itemDetailsPromises = watchlist.map((item) =>
-          fetchMovieDetails(item.movieId, item.type)
-        );
+        const itemDetailsPromises = watchlist.map(async (item) => {
+          const details = await fetchMovieDetails(item.movieId, item.type);
+          return { ...details, filmType: item.type }; // Append filmType
+        });
         const itemsDetails = await Promise.all(itemDetailsPromises);
-        setItems(itemsDetails); // Set fetched details into state
+        setItems(itemsDetails);
       } catch (error) {
         console.error('Error fetching watchlist details:', error);
       }
@@ -88,7 +93,11 @@ const WatchlistPage: React.FC = () => {
           <h1>Your Watchlist</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((item) => (
-              <div key={item.id} className="p-4 border rounded-lg shadow-md">
+              <div
+                key={item.id}
+                className="p-4 border rounded-lg shadow-md"
+                onClick={() => handleMovieClick(item.id, item.filmType)}
+              >
                 <Image
                   src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "/images/movie-poster-placeholder.png"}
                   alt={item.title || item.name || "Movie Poster"}

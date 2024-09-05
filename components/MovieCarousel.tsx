@@ -7,6 +7,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { Movie } from "@/types/types";
+import useMovieNavigation from "@/hooks/useMovieNavigation"; // Import the custom hook
 
 interface MovieCarouselProps {
   movies: Movie[];
@@ -17,14 +18,10 @@ interface MovieCarouselProps {
 export default function MovieCarousel({ movies, title, type }: MovieCarouselProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [imageError, setImageError] = useState<{ [key: number]: boolean }>({});
-  const router = useRouter(); // Initialize useRouter
+  const { handleMovieClick } = useMovieNavigation(); // Use the custom hook
 
   const handleImageError = (id: number) => {
     setImageError((prev) => ({ ...prev, [id]: true }));
-  };
-
-  const handleMovieClick = (id: number, type: 'movie' | 'tv') => {
-    router.push(`/details/${type}/${id}`); // Navigate to the details page with type
   };
 
   return (
