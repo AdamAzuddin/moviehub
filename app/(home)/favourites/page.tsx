@@ -73,7 +73,7 @@ const FavouritesPage: React.FC = () => {
       if (!favourites || favourites.length === 0) return;
 
       try {
-        const itemDetailsPromises = favourites.map(async (item) => {
+        const itemDetailsPromises = favourites.map(async(item) => {
           const details = await fetchMovieDetails(item.movieId, item.type);
           return { ...details, filmType: item.type }; // Append filmType
         });
@@ -96,8 +96,8 @@ const FavouritesPage: React.FC = () => {
         <div>Your favourites list is empty for now</div>
       ) : (
         <div>
-          <h1>Your Favourites</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h1 className="text-2xl lg:text-4xl font-bold">Your Favourites</h1>
+          <div className="flex">
             {items.map((item) => (
               <div
                 key={item.id}
