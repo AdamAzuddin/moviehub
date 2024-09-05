@@ -21,7 +21,7 @@ interface MovieDetails {
   title?: string;
   name?: string;
   poster_path?: string;
-  filmType: 'movie' | 'tv'; // Corrected field name
+  filmType: 'movie' | 'tv';
 }
 
 // Fetch watchlist from Firebase
@@ -31,7 +31,7 @@ const fetchWatchlistFromFirebase = async (uid: string): Promise<WatchlistItem[]>
 
   let watchlist: WatchlistItem[] = [];
   querySnapshot.forEach((doc) => {
-    watchlist = doc.data().watchlist || []; // Get the watchlist field
+    watchlist = doc.data().watchlist || [];
   });
 
   return watchlist;
@@ -42,11 +42,11 @@ const fetcher = (uid: string): Promise<WatchlistItem[]> => fetchWatchlistFromFir
 
 const WatchlistPage: React.FC = () => {
   const { user } = useAuth();
-  const resetWatchlist = useStore((state) => state.resetWatchlist); // Action to reset the list
-  const addToWatchlist = useStore((state) => state.addToWatchlist); // Zustand action for adding to watchlist
-  const watchlist = useStore((state) => state.watchlist); // Zustand watchlist array
-  const [items, setItems] = useState<MovieDetails[]>([]); // State for storing movie/TV details
-  const { handleMovieClick } = useMovieNavigation(); // Use the custom hook
+  const resetWatchlist = useStore((state) => state.resetWatchlist);
+  const addToWatchlist = useStore((state) => state.addToWatchlist);
+  const watchlist = useStore((state) => state.watchlist);
+  const [items, setItems] = useState<MovieDetails[]>([]); 
+  const { handleMovieClick } = useMovieNavigation();
 
   // Use SWR for caching with types
   const { data, error } = useSWR<WatchlistItem[]>(user ? user.uid : null, fetcher);
@@ -54,9 +54,9 @@ const WatchlistPage: React.FC = () => {
   // Add fetched watchlist to Zustand store when data is available
   useEffect(() => {
     if (data) {
-      resetWatchlist(); // Reset the list
+      resetWatchlist();
       data.forEach((item) => {
-        addToWatchlist(item); // Add each watchlist item to the store
+        addToWatchlist(item);
       });
     }
   }, [data, addToWatchlist, resetWatchlist]);

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { useRouter } from 'next/navigation'; // Ensure you're using the correct import
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Movie } from "@/types/types";
 import ChevronLeftIcon from '@/components/icons/ChevronLeft';

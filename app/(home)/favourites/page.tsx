@@ -20,7 +20,7 @@ interface MovieDetails {
   title?: string;
   name?: string;
   poster_path?: string;
-  filmType: "movie" | "tv"; // Corrected field name
+  filmType: "movie" | "tv"; 
 }
 
 // Fetch favorites from Firebase
@@ -32,7 +32,7 @@ const fetchFavouritesFromFirebase = async (
 
   let favourites: FavouriteItem[] = [];
   querySnapshot.forEach((doc) => {
-    favourites = doc.data().favourites || []; // Get the favourites field
+    favourites = doc.data().favourites || [];
   });
 
   return favourites;
@@ -44,25 +44,25 @@ const fetcher = (uid: string): Promise<FavouriteItem[]> =>
 
 const FavouritesPage: React.FC = () => {
   const { user } = useAuth();
-  const resetFavourites = useStore((state) => state.resetFavourites); // Action to reset the list
+  const resetFavourites = useStore((state) => state.resetFavourites);
 
-  const addToFavourites = useStore((state) => state.addToFavourites); // Zustand action for adding to favourites
-  const favourites = useStore((state) => state.favourites); // Zustand favourites array
-  const [items, setItems] = useState<MovieDetails[]>([]); // State for storing movie/TV details
+  const addToFavourites = useStore((state) => state.addToFavourites);
+  const favourites = useStore((state) => state.favourites);
+  const [items, setItems] = useState<MovieDetails[]>([]);
 
   // Use SWR for caching with types
   const { data, error } = useSWR<FavouriteItem[]>(
     user ? user.uid : null,
     fetcher
   );
-  const { handleMovieClick } = useMovieNavigation(); // Use the custom hook
+  const { handleMovieClick } = useMovieNavigation();
 
   // Add fetched favourites to Zustand store when data is available
   useEffect(() => {
     if (data) {
-      resetFavourites(); // Reset the list
+      resetFavourites();
       data.forEach((item) => {
-        addToFavourites(item); // Add each favourite item to the store
+        addToFavourites(item);
       });
     }
   }, [data, addToFavourites]);
