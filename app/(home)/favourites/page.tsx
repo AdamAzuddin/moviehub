@@ -4,31 +4,81 @@ import Image from 'next/image';
 import useStore from '@/store/store';
 import { useAuth } from '@/hooks/useAuth';
 import { fetchMovieDetails } from '@/lib/tmdb';
+import useSWR from 'swr';
+import { query, where, collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-const FavouritesPage = () => {
-  const { user } = useAuth(); // Get the current authenticated user
-  const favourites = useStore((state) => state.favourites); // Get the favourites list
-  const [items, setItems] = useState<any[]>([]); // State to store movie and TV show details
+// Define types
+interface FavouriteItem {
+  movieId: string;
+  type: "movie" | "tv";
+}
 
+interface MovieDetails {
+  id: number;
+  title?: string;
+  name?: string;
+  poster_path?: string;
+}
+
+// Fetch favorites from Firebase
+const fetchFavouritesFromFirebase = async (uid: string): Promise<FavouriteItem[]> => {
+  const q = query(collection(db, "users"), where("uid", "==", uid));
+  const querySnapshot = await getDocs(q);
+
+  let favourites: FavouriteItem[] = [];
+  querySnapshot.forEach((doc) => {
+    favourites = doc.data().favourites || []; // Get the favourites field
+  });
+
+  return favourites;
+};
+
+// SWR fetcher function with typing
+const fetcher = (uid: string): Promise<FavouriteItem[]> => fetchFavouritesFromFirebase(uid);
+
+const FavouritesPage: React.FC = () => {
+  const { user } = useAuth();
+  const resetFavourites = useStore((state) => state.resetFavourites); // Action to reset the list
+  
+  const addToFavourites = useStore((state) => state.addToFavourites); // Zustand action for adding to favourites
+  const favourites = useStore((state) => state.favourites); // Zustand favourites array
+  const [items, setItems] = useState<MovieDetails[]>([]); // State for storing movie/TV details
+
+  // Use SWR for caching with types
+  const { data, error } = useSWR<FavouriteItem[]>(user ? user.uid : null, fetcher);
+
+  // Add fetched favourites to Zustand store when data is available
+  useEffect(() => {
+    if (data) {
+      resetFavourites(); // Reset the list
+      data.forEach((item) => {
+        addToFavourites(item); // Add each favourite item to the store
+      });
+    }
+  }, [data, addToFavourites]);
+
+  // Fetch the details of favourite movies/TV shows
   useEffect(() => {
     const fetchFavouriteItems = async () => {
-      if (!user) return;
+      if (!favourites || favourites.length === 0) return;
 
       try {
-        // Fetch details for each item in the favourites list
         const itemDetailsPromises = favourites.map((item) =>
           fetchMovieDetails(item.movieId, item.type)
         );
         const itemsDetails = await Promise.all(itemDetailsPromises);
-        
-        setItems(itemsDetails);
+        setItems(itemsDetails); // Set fetched details into state
       } catch (error) {
         console.error('Error fetching favourites details:', error);
       }
     };
 
     fetchFavouriteItems();
-  }, [user, favourites]);
+  }, [favourites]);
+
+  if (error) return <div>Error loading favourites</div>;
+  if (!data) return <div>Loading favourites...</div>;
 
   return (
     <div>
@@ -42,7 +92,7 @@ const FavouritesPage = () => {
               <div key={item.id} className="p-4 border rounded-lg shadow-md">
                 <Image
                   src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "/images/movie-poster-placeholder.png"}
-                  alt={item.title || item.name}
+                  alt={item.title || item.name || "Movie Poster"}
                   width={200}
                   height={300}
                   layout="responsive"
@@ -51,7 +101,6 @@ const FavouritesPage = () => {
                   blurDataURL="/images/movie-poster-placeholder.png"
                 />
                 <h2 className="text-xl font-bold mt-2">{item.title || item.name}</h2>
-                {/* Add more item details as needed */}
               </div>
             ))}
           </div>

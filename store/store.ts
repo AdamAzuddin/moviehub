@@ -21,6 +21,7 @@ interface StoreState {
   removeFromFavourites: (item: FavouriteItem) => void;
   addToWatchlist: (item: FavouriteItem) => void;
   removeFromWatchlist: (item: FavouriteItem) => void;
+  resetFavourites: () => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -40,6 +41,7 @@ const useStore = create<StoreState>((set) => ({
   removeFromFavourites: (item) => set((state) => ({
     favourites: state.favourites.filter(i => i.movieId !== item.movieId || i.type !== item.type)
   })),
+  resetFavourites: () => set({ favourites: [] }), // New action to reset favourites
   addToWatchlist: (item) => set((state) => ({
     watchlist: [...state.watchlist, item]
   })),
