@@ -1,4 +1,4 @@
-// src/types/type.ts
+import { User } from "firebase/auth";
 
 import { ReactNode } from "react";
 
@@ -50,11 +50,12 @@ export interface Movie {
 }
 
 export interface MovieDetails{
-  movieId: string;
-  type: 'movie' | 'tv';
+  id: number;
+  title?: string;
+  name?: string;
+  poster_path?: string;
+  filmType: 'movie' | 'tv';
 }
-
-// types/types.ts
 
 export interface APIResponseMovieDetails {
   adult: boolean;
@@ -153,4 +154,28 @@ export interface APIResponseMovieDetails {
   type?: string;
   vote_average: number;
   vote_count: number;
+}
+
+export interface ListsItem {
+  id: number;
+  filmType: "movie" | "tv";
+}
+
+export interface StoreState {
+  user: User | null;
+  profilePic: string;
+  username: string;
+  uid: string;
+  favourites: ListsItem[];
+  watchlist: ListsItem[];
+  setUser: (user: User | null) => void;
+  setProfilePic: (profilePic: string) => void;
+  setUsername: (username: string) => void;
+  setUid: (uid: string) => void;
+  addToFavourites: (item: ListsItem) => void;
+  removeFromFavourites: (item: ListsItem) => void;
+  addToWatchlist: (item: ListsItem) => void;
+  removeFromWatchlist: (item: ListsItem) => void;
+  resetFavourites: () => void;
+  resetWatchlist: () => void;
 }

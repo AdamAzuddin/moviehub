@@ -8,29 +8,17 @@ import useSWR from "swr";
 import { query, where, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import useMovieNavigation from "@/hooks/useMovieNavigation";
-
-// Define types
-interface FavouriteItem {
-  movieId: string;
-  type: "movie" | "tv";
-}
-
-interface MovieDetails {
-  id: number;
-  title?: string;
-  name?: string;
-  poster_path?: string;
-  filmType: "movie" | "tv"; 
-}
+import { MovieDetails } from "@/types/types";
+import { ListsItem } from "@/types/types";
 
 // Fetch favorites from Firebase
 const fetchFavouritesFromFirebase = async (
   uid: string
-): Promise<FavouriteItem[]> => {
+): Promise<ListsItem[]> => {
   const q = query(collection(db, "users"), where("uid", "==", uid));
   const querySnapshot = await getDocs(q);
 
-  let favourites: FavouriteItem[] = [];
+  let favourites: ListsItem[] = [];
   querySnapshot.forEach((doc) => {
     favourites = doc.data().favourites || [];
   });
@@ -39,7 +27,7 @@ const fetchFavouritesFromFirebase = async (
 };
 
 // SWR fetcher function with typing
-const fetcher = (uid: string): Promise<FavouriteItem[]> =>
+const fetcher = (uid: string): Promise<ListsItem[]> =>
   fetchFavouritesFromFirebase(uid);
 
 const FavouritesPage: React.FC = () => {
@@ -51,10 +39,7 @@ const FavouritesPage: React.FC = () => {
   const [items, setItems] = useState<MovieDetails[]>([]);
 
   // Use SWR for caching with types
-  const { data, error } = useSWR<FavouriteItem[]>(
-    user ? user.uid : null,
-    fetcher
-  );
+  const { data, error } = useSWR<ListsItem[]>(user ? user.uid : null, fetcher);
   const { handleMovieClick } = useMovieNavigation();
 
   // Add fetched favourites to Zustand store when data is available
@@ -73,12 +58,16 @@ const FavouritesPage: React.FC = () => {
       if (!favourites || favourites.length === 0) return;
 
       try {
-        const itemDetailsPromises = favourites.map(async(item) => {
-          const details = await fetchMovieDetails(item.movieId, item.type);
-          return { ...details, filmType: item.type }; // Append filmType
+        const itemDetailsPromises = favourites.map(async (item) => {
+          const details = await fetchMovieDetails(
+            item.id,
+            item.filmType
+          );
+          return { ...details, filmType: item.filmType };
         });
         const itemsDetails = await Promise.all(itemDetailsPromises);
         setItems(itemsDetails); // Set fetched details into state
+        console.log(itemsDetails)
       } catch (error) {
         console.error("Error fetching favourites details:", error);
       }

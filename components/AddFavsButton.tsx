@@ -12,9 +12,8 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
 import { MovieDetails } from "@/types/types";
-import { ToastContainer, toast } from 'react-toastify';
 
-const AddFavsButton: React.FC<MovieDetails> = ({ movieId, type }) => {
+const AddFavsButton: React.FC<MovieDetails> = ({ id, filmType }) => {
   const { user } = useAuth(); // Get the current authenticated user
   const favourites = useStore((state) => state.favourites);
   const addToFavourites = useStore((state) => state.addToFavourites);
@@ -37,11 +36,11 @@ const AddFavsButton: React.FC<MovieDetails> = ({ movieId, type }) => {
         const userDocRef = userSnapshot.docs[0].ref;
 
         // Create an item object with movieId and type
-        const item = { movieId, type };
+        const item = { id, filmType };
 
         // Check if the item is already in favourites
         const isFavourite = favourites.some(
-          (favItem) => favItem.movieId === movieId && favItem.type === type
+          (favItem) => favItem.id === id && favItem.filmType === filmType
         );
 
         if (isFavourite) {

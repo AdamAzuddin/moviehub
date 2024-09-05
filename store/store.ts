@@ -1,29 +1,5 @@
 import { create } from "zustand";
-import { User } from "firebase/auth";
-
-interface FavouriteItem {
-  movieId: string;
-  type: "movie" | "tv";
-}
-
-interface StoreState {
-  user: User | null;
-  profilePic: string;
-  username: string;
-  uid: string;
-  favourites: FavouriteItem[];
-  watchlist: FavouriteItem[];
-  setUser: (user: User | null) => void;
-  setProfilePic: (profilePic: string) => void;
-  setUsername: (username: string) => void;
-  setUid: (uid: string) => void;
-  addToFavourites: (item: FavouriteItem) => void;
-  removeFromFavourites: (item: FavouriteItem) => void;
-  addToWatchlist: (item: FavouriteItem) => void;
-  removeFromWatchlist: (item: FavouriteItem) => void;
-  resetFavourites: () => void;
-  resetWatchlist: () => void;
-}
+import { StoreState } from "@/types/types";
 
 const useStore = create<StoreState>((set) => ({
   user: null,
@@ -40,14 +16,14 @@ const useStore = create<StoreState>((set) => ({
     favourites: [...state.favourites, item]
   })),
   removeFromFavourites: (item) => set((state) => ({
-    favourites: state.favourites.filter(i => i.movieId !== item.movieId || i.type !== item.type)
+    favourites: state.favourites.filter(i => i.id !== item.id || i.filmType !== item.filmType)
   })),
   resetFavourites: () => set({ favourites: [] }), // New action to reset favourites
   addToWatchlist: (item) => set((state) => ({
     watchlist: [...state.watchlist, item]
   })),
   removeFromWatchlist: (item) => set((state) => ({
-    watchlist: state.watchlist.filter(i => i.movieId !== item.movieId || i.type !== item.type)
+    watchlist: state.watchlist.filter(i => i.id !== item.id || i.filmType !== item.filmType)
   })),
   resetWatchlist: () => set({ watchlist: [] })
 }));

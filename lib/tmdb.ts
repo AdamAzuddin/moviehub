@@ -21,7 +21,7 @@ export const fetchMovies = async (endpoint: string, params: object = {}) => {
 };
 
 
-export const fetchMovieDetails = async (movieId: string, type: 'movie' | 'tv') => {
+export const fetchMovieDetails = async (movieId: number, type: 'movie' | 'tv') => {
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/${type}/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`

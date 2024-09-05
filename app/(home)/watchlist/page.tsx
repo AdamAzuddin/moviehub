@@ -9,27 +9,15 @@ import useSWR from 'swr';
 import { query, where, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import useMovieNavigation from '@/hooks/useMovieNavigation';
-
-// Define types
-interface WatchlistItem {
-  movieId: string;
-  type: "movie" | "tv";
-}
-
-interface MovieDetails {
-  id: number;
-  title?: string;
-  name?: string;
-  poster_path?: string;
-  filmType: 'movie' | 'tv';
-}
+import { MovieDetails } from '@/types/types';
+import { ListsItem } from '@/types/types';
 
 // Fetch watchlist from Firebase
-const fetchWatchlistFromFirebase = async (uid: string): Promise<WatchlistItem[]> => {
+const fetchWatchlistFromFirebase = async (uid: string): Promise<ListsItem[]> => {
   const q = query(collection(db, "users"), where("uid", "==", uid));
   const querySnapshot = await getDocs(q);
 
-  let watchlist: WatchlistItem[] = [];
+  let watchlist: ListsItem[] = [];
   querySnapshot.forEach((doc) => {
     watchlist = doc.data().watchlist || [];
   });
@@ -38,7 +26,7 @@ const fetchWatchlistFromFirebase = async (uid: string): Promise<WatchlistItem[]>
 };
 
 // SWR fetcher function with typing
-const fetcher = (uid: string): Promise<WatchlistItem[]> => fetchWatchlistFromFirebase(uid);
+const fetcher = (uid: string): Promise<ListsItem[]> => fetchWatchlistFromFirebase(uid);
 
 const WatchlistPage: React.FC = () => {
   const { user } = useAuth();
@@ -49,7 +37,7 @@ const WatchlistPage: React.FC = () => {
   const { handleMovieClick } = useMovieNavigation();
 
   // Use SWR for caching with types
-  const { data, error } = useSWR<WatchlistItem[]>(user ? user.uid : null, fetcher);
+  const { data, error } = useSWR<ListsItem[]>(user ? user.uid : null, fetcher);
 
   // Add fetched watchlist to Zustand store when data is available
   useEffect(() => {
@@ -68,8 +56,8 @@ const WatchlistPage: React.FC = () => {
 
       try {
         const itemDetailsPromises = watchlist.map(async (item) => {
-          const details = await fetchMovieDetails(item.movieId, item.type);
-          return { ...details, filmType: item.type }; // Append filmType
+          const details = await fetchMovieDetails(item.id, item.filmType);
+          return { ...details, filmType: item.filmType }; // Append filmType
         });
         const itemsDetails = await Promise.all(itemDetailsPromises);
         setItems(itemsDetails);

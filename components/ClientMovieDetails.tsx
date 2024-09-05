@@ -12,21 +12,21 @@ import { MovieDetails } from "@/types/types";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const ClientMovieDetails = ({ movieId , type}: MovieDetails) => {
+const ClientMovieDetails = ({ id , filmType}: MovieDetails) => {
   // State to handle image error
   const [imageError, setImageError] = useState(false);
   const user = useStore((state) => state.user);
 
   // Fetch movie details
   const { data: movieDetails, error: movieError } = useSWR(
-    `${TMDB_BASE_URL}/${type}/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+    `${TMDB_BASE_URL}/${filmType}/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
     fetcher
   );
 
   // Fetch similar movies
   const { data: similarMovies, error: similarError } = useSWR(
-    movieId
-      ? `${TMDB_BASE_URL}/${type}/${movieId}/similar?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+    id
+      ? `${TMDB_BASE_URL}/${filmType}/${id}/similar?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
       : null,
     fetcher
   );
@@ -76,8 +76,8 @@ const ClientMovieDetails = ({ movieId , type}: MovieDetails) => {
           </p>
           {user ? (
             <div className="mt-4 flex gap-2">
-              <AddFavsButton movieId={movieId} type={type}/>
-              <AddWatchlistButton movieId={movieId} type={type}/>
+              <AddFavsButton id={id} filmType={filmType}/>
+              <AddWatchlistButton id={id} filmType={filmType}/>
             </div>
           ) : (
             <></>
@@ -88,7 +88,7 @@ const ClientMovieDetails = ({ movieId , type}: MovieDetails) => {
         <MovieCarousel
           movies={similarMovies.results}
           title="You may also like"
-          type={type}
+          type={filmType}
         />
       </div>
     </div>

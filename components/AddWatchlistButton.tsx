@@ -14,11 +14,11 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 interface AddWatchlistButtonProps {
-  movieId: string;
-  type: "movie" | "tv";
+  id: number;
+  filmType: "movie" | "tv";
 }
 
-const AddWatchlistButton: React.FC<AddWatchlistButtonProps> = ({ movieId, type }) => {
+const AddWatchlistButton: React.FC<AddWatchlistButtonProps> = ({ id, filmType }) => {
   const [error, setError] = useState("")
   const { user } = useAuth(); // Get the current authenticated user
   const watchlist = useStore((state) => state.watchlist);
@@ -41,11 +41,11 @@ const AddWatchlistButton: React.FC<AddWatchlistButtonProps> = ({ movieId, type }
         const userDocRef = userSnapshot.docs[0].ref;
   
         // Create an item object with movieId and type
-        const item = { movieId, type };
+        const item = { id, filmType };
   
         // Check if the item is already in the watchlist
         const isInWatchlist = watchlist.some(
-          (watchlistItem) => watchlistItem.movieId === movieId && watchlistItem.type === type
+          (watchlistItem) => watchlistItem.id === id && watchlistItem.filmType === filmType
         );
   
         if (isInWatchlist) {

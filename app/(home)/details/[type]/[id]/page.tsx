@@ -3,11 +3,11 @@ import ClientMovieDetails from "@/components/ClientMovieDetails";
 import { TMDB_BASE_URL } from "@/constants/constants";
 
 // Function to fetch movie or TV details based on type
-const fetchDetails = async (movieId: string, type: 'movie' | 'tv') => {
+const fetchDetails = async (id: number, type: 'movie' | 'tv') => {
   
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/${type}/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+      `${TMDB_BASE_URL}/${type}/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
     );
     
     // Ensure response is OK
@@ -25,7 +25,7 @@ const fetchDetails = async (movieId: string, type: 'movie' | 'tv') => {
 };
 
 
-const DetailsPage = async ({ params }: { params: { type: 'movie' | 'tv'; id: string } }) => {
+const DetailsPage = async ({ params }: { params: { type: 'movie' | 'tv'; id: number } }) => {
   const { type, id } = params;
   const movieDetails = await fetchDetails(id, type);
   if (!movieDetails) {
@@ -33,7 +33,7 @@ const DetailsPage = async ({ params }: { params: { type: 'movie' | 'tv'; id: str
   }
 
   return (
-    <ClientMovieDetails movieId={id} type={type}/>
+    <ClientMovieDetails id={id} filmType={type}/>
   );
 };
 
