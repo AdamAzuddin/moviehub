@@ -30,6 +30,7 @@ const FavouritesPage: React.FC = () => {
   const [items, setItems] = useState<MovieDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const favorites = useStore((state) => state.favourites);
 
   // Fetch the favorites from Firebase and update Zustand store
   useEffect(() => {
@@ -64,7 +65,7 @@ const FavouritesPage: React.FC = () => {
     };
 
     fetchData();
-  }, [user, resetFavourites, addToFavourites]);
+  }, [user, resetFavourites, addToFavourites, favorites]);
 
   if (loading) return <div>Loading favourites...</div>;
   if (error) return <div>{error}</div>;
@@ -78,7 +79,7 @@ const FavouritesPage: React.FC = () => {
           <h1 className="text-2xl lg:text-4xl font-bold">Your Favourites</h1>
           <div className="flex">
             {items.map((item) => (
-              <ListsItemComponent key={item.id} item={item} />
+              <ListsItemComponent key={item.id} item={item} listType="favourites"/>
             ))}
           </div>
         </div>

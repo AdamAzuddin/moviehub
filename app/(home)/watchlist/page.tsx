@@ -29,6 +29,7 @@ const WatchlistPage: React.FC = () => {
   const [items, setItems] = useState<MovieDetails[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const watchlist = useStore((state) => state.watchlist);
 
   // Consolidated useEffect for fetching and updating data
   useEffect(() => {
@@ -60,7 +61,7 @@ const WatchlistPage: React.FC = () => {
     };
 
     fetchData();
-  }, [user, resetWatchlist, addToWatchlist]);
+  }, [user, resetWatchlist, addToWatchlist, watchlist]);
 
   if (loading) return <div>Loading watchlist...</div>;
   if (error) return <div>{error}</div>;
@@ -74,7 +75,7 @@ const WatchlistPage: React.FC = () => {
           <h1 className="text-2xl lg:text-4xl font-bold">Your Watchlist</h1>
           <div className="flex">
             {items.map((item) => (
-              <ListsItemComponent key={item.id} item={item} />
+              <ListsItemComponent key={item.id} item={item} listType='watchlist'/>
             ))}
           </div>
         </div>

@@ -3,15 +3,34 @@ import Image from "next/image";
 import { MovieDetails } from "@/types/types";
 import useMovieNavigation from "@/hooks/useMovieNavigation";
 import MinusCircleIcon from "./icons/MinusCircleIcon";
+import useRemoveFromFavourites from "@/hooks/useRemoveFromFavourites";
+import useRemoveFromWatchlist from "@/hooks/useRemoveFromWatchlist";
+import useStore from "@/store/store";
 
 // Define the props type
 interface ListsItemProps {
   item: MovieDetails;
+  listType: 'favourites' | 'watchlist';
 }
 
-const ListsItemComponent: React.FC<ListsItemProps> = ({ item }) => {
+const ListsItemComponent: React.FC<ListsItemProps> = ({ item, listType }) => {
   const { handleMovieClick } = useMovieNavigation();
+  const uid = useStore((state) => state.uid);
+  const {removeFavourite} = useRemoveFromFavourites();
+  const {removeWatchlist} = useRemoveFromWatchlist();
 
+  const handleRemoveFromList = async (uid:string, movieId:number, filmType:'movie' | 'tv', listType : 'favourites' | 'watchlist') => {
+    if (listType === 'favourites') {
+      await removeFavourite(uid, movieId, filmType);
+    }
+
+    else if (listType === 'watchlist') {
+      await removeWatchlist(uid, movieId, filmType);
+    }
+    else{
+      console.error('Invalid list type');
+    }
+  }
   return (
     <div className="relative p-4 border rounded-lg shadow-md flex flex-col">
       <div
@@ -39,7 +58,7 @@ const ListsItemComponent: React.FC<ListsItemProps> = ({ item }) => {
         <p className="text-left text-lg font-semibold">
           {item.title || item.name}
         </p>
-        <button className="text-red-500">
+        <button className="text-red-500" onClick={() => handleRemoveFromList(uid, item.id, item.filmType, listType)}>
           <MinusCircleIcon />
         </button>
       </div>
