@@ -16,7 +16,7 @@ const ListsItemComponent: React.FC<ListsItemProps> = ({ item, listType }) => {
     <div className="relative p-4 border rounded-lg shadow-md flex flex-col">
       <div
         key={item.id}
-        onClick={() => handleMovieClick(item.id, item.filmType)}
+        onClick={() => handleMovieClick(item.id, item.mediaType)}
       >
         <Image
           src={

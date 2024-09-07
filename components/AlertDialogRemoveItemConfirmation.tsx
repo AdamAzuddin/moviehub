@@ -27,13 +27,13 @@ export function AlertDialogRemoveItemConfirmation({
   const handleRemoveFromList = async (
     uid: string,
     movieId: number,
-    filmType: "movie" | "tv",
+    mediaType: "movie" | "tv",
     listType: "favourites" | "watchlist"
   ) => {
     if (listType === "favourites") {
-      await removeFavourite(uid, movieId, filmType);
+      await removeFavourite(uid, movieId, mediaType);
     } else if (listType === "watchlist") {
-      await removeWatchlist(uid, movieId, filmType);
+      await removeWatchlist(uid, movieId, mediaType);
     } else {
       console.error("Invalid list type");
     }
@@ -60,7 +60,7 @@ export function AlertDialogRemoveItemConfirmation({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() =>
-              handleRemoveFromList(uid, item.id, item.filmType, listType)
+              handleRemoveFromList(uid, item.id, item.mediaType, listType)
             }
           >
             Continue

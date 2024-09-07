@@ -13,7 +13,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { MovieDetails } from "@/types/types";
 
-const AddFavsButton: React.FC<MovieDetails> = ({ id, filmType }) => {
+const AddFavsButton: React.FC<MovieDetails> = ({ id, mediaType }) => {
   const { user } = useAuth(); // Get the current authenticated user
   const favourites = useStore((state) => state.favourites);
   const addToFavourites = useStore((state) => state.addToFavourites);
@@ -36,11 +36,11 @@ const AddFavsButton: React.FC<MovieDetails> = ({ id, filmType }) => {
         const userDocRef = userSnapshot.docs[0].ref;
 
         // Create an item object with movieId and type
-        const item = { id, filmType };
+        const item = { id, mediaType };
 
         // Check if the item is already in favourites
         const isFavourite = favourites.some(
-          (favItem) => favItem.id === id && favItem.filmType === filmType
+          (favItem) => favItem.id === id && favItem.mediaType === mediaType
         );
 
         if (isFavourite) {

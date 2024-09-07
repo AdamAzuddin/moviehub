@@ -54,7 +54,7 @@ export interface MovieDetails{
   title?: string;
   name?: string;
   poster_path?: string;
-  filmType: 'movie' | 'tv';
+  mediaType: 'movie' | 'tv';
 }
 
 export interface APIResponseMovieDetails {
@@ -158,7 +158,7 @@ export interface APIResponseMovieDetails {
 
 export interface ListsItem {
   id: number;
-  filmType: "movie" | "tv";
+  mediaType: "movie" | "tv";
 }
 
 export interface StoreState {

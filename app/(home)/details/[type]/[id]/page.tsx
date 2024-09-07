@@ -33,7 +33,7 @@ const DetailsPage = async ({ params }: { params: { type: 'movie' | 'tv'; id: num
   }
 
   return (
-    <ClientMovieDetails id={id} filmType={type}/>
+    <ClientMovieDetails id={id} mediaType={type}/>
   );
 };
 

@@ -7,7 +7,7 @@ const useRemoveFromFavourites = () => {
   const router = useRouter();
   const removeFromFavourites = useStore((state) => state.removeFromFavourites);
 
-  const removeFavourite = async (uid: string, movieId: number, filmType: 'movie' | 'tv') => {
+  const removeFavourite = async (uid: string, movieId: number, mediaType: 'movie' | 'tv') => {
     try {
       // Query Firestore to find the user document with the matching uid
       const q = query(collection(db, "users"), where("uid", "==", uid));
@@ -35,7 +35,7 @@ const useRemoveFromFavourites = () => {
         console.log("Item removed from favourites");
 
         // Update Zustand store
-        removeFromFavourites({ id: movieId, filmType: filmType });
+        removeFromFavourites({ id: movieId, mediaType: mediaType });
         console.log("Zustand store updated");
         router.refresh()
       } else {

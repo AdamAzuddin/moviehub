@@ -46,8 +46,8 @@ const WatchlistPage: React.FC = () => {
 
         // Fetch movie details for each watchlist item
         const itemDetailsPromises = fetchedWatchlist.map(async (item) => {
-          const details = await fetchMovieDetails(item.id, item.filmType);
-          return { ...details, filmType: item.filmType }; // Append filmType
+          const details = await fetchMovieDetails(item.id, item.mediaType);
+          return { ...details, mediaType: item.mediaType }; // Append mediaType
         });
 
         const itemsDetails = await Promise.all(itemDetailsPromises);

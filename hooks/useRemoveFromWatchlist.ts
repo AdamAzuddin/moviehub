@@ -7,7 +7,7 @@ const useRemoveFromWatchlist = () => {
   const router = useRouter();
   const removeFromWatchlist = useStore((state) => state.removeFromWatchlist);
 
-  const removeWatchlist = async (uid: string, movieId: number, filmType: 'movie' | 'tv') => {
+  const removeWatchlist = async (uid: string, movieId: number, mediaType: 'movie' | 'tv') => {
     try {
       // Query Firestore to find the user document with the matching uid
       const q = query(collection(db, "users"), where("uid", "==", uid));
@@ -35,7 +35,7 @@ const useRemoveFromWatchlist = () => {
         console.log("Item removed from watchlist");
 
         // Update Zustand store
-        removeFromWatchlist({ id: movieId, filmType: filmType });
+        removeFromWatchlist({ id: movieId, mediaType: mediaType });
         console.log("Zustand store updated");
         router.refresh()
       } else {

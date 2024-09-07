@@ -2,9 +2,9 @@
 import ClientMovieDetails from "@/components/ClientMovieDetails";
 import { MovieDetails } from "@/types/types";
 
-const DetailsPage = async ({ id, filmType }: MovieDetails) => {
+const DetailsPage = async ({ id, mediaType }: MovieDetails) => {
   return (
-    <ClientMovieDetails id={id} filmType={filmType}/>
+    <ClientMovieDetails id={id} mediaType={mediaType}/>
   );
 };
 
