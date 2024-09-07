@@ -179,3 +179,8 @@ export interface StoreState {
   resetFavourites: () => void;
   resetWatchlist: () => void;
 }
+
+export interface ListsItemProps {
+  item: MovieDetails;
+  listType: 'favourites' | 'watchlist';
+}
