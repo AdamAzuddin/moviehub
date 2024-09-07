@@ -9,6 +9,7 @@ import AddFavsButton from "./AddFavsButton";
 import useStore from "@/store/store";
 import AddWatchlistButton from "./AddWatchlistButton";
 import { MovieDetails } from "@/types/types";
+import CommentSection from "./CommentSection";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -84,6 +85,7 @@ const ClientMovieDetails = ({ id , mediaType}: MovieDetails) => {
           )}
         </div>
       </div>
+      <CommentSection/>
       <div className="mt-8">
         <MovieCarousel
           movies={similarMovies.results}
