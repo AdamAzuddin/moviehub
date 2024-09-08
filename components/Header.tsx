@@ -30,7 +30,7 @@ export default function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
-            <Link href="#" prefetch={false}>
+            <Link href="/" prefetch={false}>
               <span className="sr-only">ShadCN</span>
             </Link>
             <Link href={"/profile"}>
@@ -43,7 +43,7 @@ export default function Header() {
             <p className="mt-6 text-sm">@{username}</p>
             <div className="grid gap-2 py-6">
               <Link
-                href="#"
+                href="/"
                 className="flex w-full items-center py-2 text-lg font-semibold"
                 prefetch={false}
               >
