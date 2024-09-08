@@ -1,4 +1,4 @@
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Comment } from "@/types/types";
 
@@ -19,8 +19,12 @@ export async function addCommentToMedia(mediaId: number, comment: Comment) {
       // Create a reference to the "comments" subcollection within the media document
       const commentsSubcollectionRef = collection(db, `media/${mediaDocRef.id}/comments`);
       
+      
       // Add the comment to the comments subcollection
       const commentDocRef = await addDoc(commentsSubcollectionRef, comment);
+      const repliesSubcollectionRef = collection(db, `media/${mediaDocRef.id}/comments/${commentDocRef.id}/replies`);
+      
+      await setDoc(doc(repliesSubcollectionRef, "initial"), {});
       
       console.log("Comment added with ID: ", commentDocRef.id);
     } else {

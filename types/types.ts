@@ -57,9 +57,16 @@ export interface Comment {
   avatar: string;
   mediaId: number;
   mediaType: 'movie' | 'tv';
-  replies?: Comment[];
+  replies: Reply[];
 }
 
+export interface Reply {
+  id: string;
+  text: string;
+  authorId: string;
+  authorUsername: string;
+  avatar: string;
+}
 export interface MovieDetails{
   id: number;
   title?: string;

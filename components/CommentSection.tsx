@@ -4,10 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useStore from "@/store/store";
-import { MovieDetails } from "@/types/types";
+import { MovieDetails, Reply } from "@/types/types";
 import { db } from "@/lib/firebase";
 import { Comment } from "@/types/types";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { addMediaToMediaCollectionFirebase } from "@/utils/mediaService";
 import { addCommentToMedia } from "@/utils/commentService";
 
@@ -32,45 +40,57 @@ export default function CommentSection({
   const profilePic = useStore((state) => state.profilePic);
 
   useEffect(() => {
-    // Define an asynchronous function inside useEffect
     const fetchMediaData = async () => {
       try {
-        // Reference to the "media" collection
         const mediaCollection = collection(db, "media");
-
-        // Query to find the media document with the specified mediaId
         const q = query(mediaCollection, where("id", "==", mediaId));
         const mediaSnapshot = await getDocs(q);
-
+  
         if (!mediaSnapshot.empty) {
-          // Handle the media document found
           const mediaDocRef = mediaSnapshot.docs[0].ref;
           setIsOnMediaCollectionFirebase(true);
-
-          // Reference to the "comments" subcollection of the media document
+  
           const commentsSubcollectionRef = collection(
             db,
             `media/${mediaDocRef.id}/comments`
           );
-
-          /// Query to get all comments, excluding the document with name "initial"
+  
           const commentsQuery = query(
             commentsSubcollectionRef,
             where("id", "!=", "initial")
           );
           const commentsSnapshot = await getDocs(commentsQuery);
-          // Map comments snapshot to an array of comment objects
-          const fetchedComments: Comment[] = commentsSnapshot.docs.map(
-            (doc) => {
-              const data = doc.data() as Omit<Comment, "id">; // Exclude id from the spread
+  
+          const fetchedComments: Comment[] = await Promise.all(
+            commentsSnapshot.docs.map(async (doc) => {
+              const data = doc.data() as Omit<Comment, "id" | "replies">;
+              const commentId = doc.id;
+  
+              // Reference to the replies subcollection
+              const repliesSubcollectionRef = collection(
+                db,
+                `media/${mediaDocRef.id}/comments/${commentId}/replies`
+              );
+  
+              // Query to exclude replies with id == "initial"
+              const repliesQuery = query(
+                repliesSubcollectionRef,
+                where("id", "!=", "initial")
+              );
+              const repliesSnapshot = await getDocs(repliesQuery);
+              const replies = repliesSnapshot.docs.map((replyDoc) => ({
+                id: replyDoc.id,
+                ...replyDoc.data(),
+              })) as Reply[]; // Cast to Reply type
+  
               return {
-                id: doc.id, // Add id separately
+                id: commentId,
                 ...data,
+                replies,
               };
-            }
+            })
           );
-
-          // Update state with fetched comments
+  
           setComments(fetchedComments);
         } else {
           setIsOnMediaCollectionFirebase(false);
@@ -79,16 +99,14 @@ export default function CommentSection({
         console.error("Error fetching media data: ", error);
       }
     };
-
-    // Call the asynchronous function
+  
     fetchMediaData();
-
-    // Cleanup function (optional)
+  
     return () => {
-      // Perform any cleanup if needed
+      // Cleanup if needed
     };
-  }, [mediaId]); // Include mediaId in the dependency array if it changes
-
+  }, [mediaId]);
+  
   // State to handle reply inputs
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const generateCommentId = async () => {
@@ -132,30 +150,69 @@ export default function CommentSection({
     e.preventDefault();
     const replyText = replyInputs[commentId];
     const replyId = await generateCommentId();
+    console.log("Replying to comment with id: " + commentId);
 
     if (replyText.trim()) {
-      const updatedComments = comments.map((comment) => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            replies: [
-              ...(comment.replies || []),
-              {
-                id: replyId,
-                text: replyText,
-                authorId: uid,
-                authorUsername: username,
-                avatar: profilePic,
-                mediaId: mediaId,
-                mediaType,
-              },
-            ],
-          };
+      try {
+        // Reference to the media document's comments subcollection
+        const mediaCollection = collection(db, "media");
+        const mediaQuery = query(mediaCollection, where("id", "==", mediaId));
+        const mediaSnapshot = await getDocs(mediaQuery);
+
+        if (!mediaSnapshot.empty) {
+          const mediaDocRef = mediaSnapshot.docs[0].ref;
+          const commentsSubcollectionRef = collection(
+            db,
+            `media/${mediaDocRef.id}/comments`
+          );
+
+          const commentQuery = query(
+            commentsSubcollectionRef,
+            where("id", "==", commentId)
+          );
+          const commentSnapshot = await getDocs(commentQuery);
+          if (!commentSnapshot.empty) {
+            const commentDocRef = commentSnapshot.docs[0].ref;
+            const repliesSubcollectionRef = collection(
+              db,
+              `media/${mediaDocRef.id}/comments/${commentDocRef.id}/replies`
+            );
+            const newReply = {
+              id: replyId,
+              text: replyText,
+              authorId: uid,
+              authorUsername: username,
+              avatar: profilePic,
+              mediaId: mediaId,
+              mediaType,
+            };
+
+            await addDoc(repliesSubcollectionRef, newReply);
+
+            // Update local state
+            const updatedComments = comments.map((comment) => {
+              if (comment.id === commentId) {
+                return {
+                  ...comment,
+                  replies: [...(comment.replies || []), newReply],
+                };
+              }
+              return comment;
+            });
+            setComments(updatedComments);
+            setReplyInputs({ ...replyInputs, [commentId]: "" }); // Clear the reply input
+          } /* 
+          const commentDocRef = doc(commentsSubcollectionRef, commentId);
+
+          const repliesSubcollectionRef = collection(
+            db,
+            `media/${mediaDocRef.id}/comments/${commentDocRef.id}/replies`
+          );
+           */
         }
-        return comment;
-      });
-      setComments(updatedComments);
-      setReplyInputs({ ...replyInputs, [commentId]: "" }); // Clear the reply input
+      } catch (error) {
+        console.error("Error saving reply: ", error);
+      }
     }
   };
 
