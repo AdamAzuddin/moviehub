@@ -10,27 +10,20 @@ import { Comment } from "@/types/types";
 import {
   addDoc,
   collection,
-  doc,
   getDocs,
   query,
-  setDoc,
   where,
 } from "firebase/firestore";
 import { addMediaToMediaCollectionFirebase } from "@/utils/mediaService";
 import { addCommentToMedia } from "@/utils/commentService";
+import { CommentSectionProps } from "@/types/types";
 
-// Define props types for MovieComments
-interface MovieCommentsProps {
-  commentCount?: number;
-  mediaId: number;
-  mediaType: "movie" | "tv";
-}
 
 export default function CommentSection({
   commentCount = 0,
   mediaId,
   mediaType,
-}: MovieCommentsProps) {
+}: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const [isOnMediaCollectionFirebase, setIsOnMediaCollectionFirebase] =
@@ -107,11 +100,11 @@ export default function CommentSection({
     };
   }, [mediaId]);
   
-  // State to handle reply inputs
+  
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const generateCommentId = async () => {
-    const { v4: uuidv4 } = await import("uuid"); // Dynamically import the uuid library
-    return uuidv4(); // Generate and return the unique ID
+    const { v4: uuidv4 } = await import("uuid"); 
+    return uuidv4();
   };
 
   const handleCommentSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -200,15 +193,8 @@ export default function CommentSection({
               return comment;
             });
             setComments(updatedComments);
-            setReplyInputs({ ...replyInputs, [commentId]: "" }); // Clear the reply input
-          } /* 
-          const commentDocRef = doc(commentsSubcollectionRef, commentId);
-
-          const repliesSubcollectionRef = collection(
-            db,
-            `media/${mediaDocRef.id}/comments/${commentDocRef.id}/replies`
-          );
-           */
+            setReplyInputs({ ...replyInputs, [commentId]: "" });
+          }
         }
       } catch (error) {
         console.error("Error saving reply: ", error);
@@ -233,7 +219,7 @@ export default function CommentSection({
       <form onSubmit={handleCommentSubmit} className="mb-6">
         <div className="flex items-start space-x-4">
           <Avatar>
-            <AvatarImage src="/placeholder-user.jpg" alt="@user" />
+            <AvatarImage src={profilePic} alt={username} />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
           <div className="flex-grow">

@@ -203,3 +203,9 @@ export interface ListsItemProps {
   item: MovieDetails;
   listType: 'favourites' | 'watchlist';
 }
+
+export interface CommentSectionProps {
+  commentCount?: number;
+  mediaId: number;
+  mediaType: "movie" | "tv";
+}
