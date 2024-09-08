@@ -48,7 +48,6 @@ export default function CommentSection({
           const mediaDocRef = mediaSnapshot.docs[0].ref;
           setIsOnMediaCollectionFirebase(true);
         } else {
-          console.error("No media document found with ID: ", mediaId);
           setIsOnMediaCollectionFirebase(false);
         }
       } catch (error) {
