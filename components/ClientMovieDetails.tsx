@@ -85,7 +85,7 @@ const ClientMovieDetails = ({ id , mediaType}: MovieDetails) => {
           )}
         </div>
       </div>
-      <CommentSection/>
+      <CommentSection mediaId={id} mediaType={mediaType}/>
       <div className="mt-8">
         <MovieCarousel
           movies={similarMovies.results}

@@ -49,12 +49,24 @@ export interface Movie {
   vote_count: number;
 }
 
+export interface Comment {
+  id: string;
+  text: string;
+  authorId: string;
+  authorUsername: string;
+  avatar: string;
+  mediaId: number;
+  mediaType: 'movie' | 'tv';
+  replies?: Comment[];
+}
+
 export interface MovieDetails{
   id: number;
   title?: string;
   name?: string;
   poster_path?: string;
   mediaType: 'movie' | 'tv';
+  comments?: Comment[];
 }
 
 export interface APIResponseMovieDetails {
