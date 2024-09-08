@@ -28,6 +28,7 @@ export default function CommentSection({
   const [newComment, setNewComment] = useState<string>("");
   const [isOnMediaCollectionFirebase, setIsOnMediaCollectionFirebase] =
     useState(false);
+  const [visibleReplies, setVisibleReplies] = useState<{ [key: string]: boolean }>({});
   const uid = useStore((state) => state.uid);
   const username = useStore((state) => state.username);
   const profilePic = useStore((state) => state.profilePic);
@@ -210,6 +211,14 @@ export default function CommentSection({
     setReplyInputs({ ...replyInputs, [commentId]: e.target.value });
   };
 
+  // Toggle replies visibility
+  const toggleRepliesVisibility = (commentId: string) => {
+    setVisibleReplies((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto my-8 p-6 bg-card rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-4">
@@ -263,49 +272,47 @@ export default function CommentSection({
                   </p>
                 </div>
               </div>
-
-              {/* Replies Section */}
-              {comment.replies && comment.replies.length > 0 && (
-                <div className="pl-12 space-y-4">
-                  {comment.replies.map((reply) => (
-                    <div key={reply.id} className="flex space-x-4">
-                      <Avatar>
-                        <AvatarImage
-                          src={reply.avatar}
-                          alt={reply.authorUsername}
-                        />
-                        <AvatarFallback>
-                          {reply.authorUsername[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold">{reply.authorUsername}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {reply.text}
-                        </p>
+              <div>
+                <button
+                  onClick={() => toggleRepliesVisibility(comment.id)}
+                  className="text-blue-500"
+                >
+                  {visibleReplies[comment.id]
+                    ? "Hide Replies"
+                    : "Show Replies"}
+                </button>
+                {visibleReplies[comment.id] && (
+                  <div className="ml-6">
+                    {comment.replies.map((reply) => (
+                      <div key={reply.id} className="flex items-start space-x-4 mb-2">
+                        <Avatar>
+                          <AvatarImage src={reply.avatar} alt={reply.authorUsername} />
+                          <AvatarFallback>
+                            {reply.authorUsername ? reply.authorUsername[0] : "?"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold">{reply.authorUsername}</p>
+                          <p>{reply.text}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Reply Input */}
-              <form
-                onSubmit={(e) => handleReplySubmit(e, comment.id)}
-                className="pl-12 mt-2"
-              >
-                <Textarea
-                  placeholder={`Reply to ${comment.authorUsername}`}
-                  value={replyInputs[comment.id] || ""}
-                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                    handleReplyInputChange(e, comment.id)
-                  }
-                  className="w-full min-h-[50px]"
-                />
-                <Button type="submit" size="sm" className="mt-2">
-                  Reply
-                </Button>
-              </form>
+                    ))}
+                    <form
+                      onSubmit={(e) => handleReplySubmit(e, comment.id)}
+                      className="mt-2"
+                    >
+                      <Textarea
+                        placeholder={`Reply to ${comment.authorUsername}`}
+                        value={replyInputs[comment.id] || ""}
+                        onChange={(e) => handleReplyInputChange(e, comment.id)}
+                      />
+                      <Button type="submit" className="mt-2">
+                        Reply
+                      </Button>
+                    </form>
+                  </div>
+                )}
+              </div>
             </div>
           ))
         )}
