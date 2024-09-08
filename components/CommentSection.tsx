@@ -17,6 +17,7 @@ import {
 import { addMediaToMediaCollectionFirebase } from "@/utils/mediaService";
 import { addCommentToMedia } from "@/utils/commentService";
 import { CommentSectionProps } from "@/types/types";
+import CommentAvatar from "./CommentAvatar";
 
 
 export default function CommentSection({
@@ -256,15 +257,7 @@ export default function CommentSection({
           comments.map((comment) => (
             <div key={comment.id} className="space-y-4 mb-4">
               <div className="flex space-x-4">
-                <Avatar>
-                  <AvatarImage
-                    src={comment.avatar}
-                    alt={comment.authorUsername}
-                  />
-                  <AvatarFallback>
-                    {comment.authorUsername ? comment.authorUsername[0] : "?"}
-                  </AvatarFallback>
-                </Avatar>
+                <CommentAvatar username={comment.authorUsername} profilePic={comment.avatar} uid={comment.authorId}/>
                 <div>
                   <p className="font-semibold">{comment.authorUsername}</p>
                   <p className="text-sm text-muted-foreground">
