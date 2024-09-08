@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,34 +7,22 @@ import useStore from "@/store/store";
 import { MovieDetails } from "@/types/types";
 import { db } from "@/lib/firebase";
 import { Comment } from "@/types/types";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { addMediaToMediaCollectionFirebase } from "@/utils/mediaService";
+import { addCommentToMedia } from "@/utils/commentService";
 // Define type for comment
 
 // Define props types for MovieComments
 interface MovieCommentsProps {
   commentCount?: number;
   mediaId: number;
-  mediaType: 'movie' | 'tv';
-}
-
-async function addMediaToMediaCollectionFirebase(media: MovieDetails) {
-  try {
-    // Reference to the "media" collection
-    const mediaCollection = collection(db, "media");
-
-    // Add the media object to the collection
-    const docRef = await addDoc(mediaCollection, media);
-
-    console.log("Media added with ID: ", docRef.id);
-  } catch (error) {
-    console.error("Error adding media: ", error);
-  }
+  mediaType: "movie" | "tv";
 }
 
 export default function CommentSection({
   commentCount = 0,
   mediaId,
-  mediaType
+  mediaType,
 }: MovieCommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
@@ -44,10 +32,43 @@ export default function CommentSection({
   const username = useStore((state) => state.username);
   const profilePic = useStore((state) => state.profilePic);
 
+  useEffect(() => {
+    // Define an asynchronous function inside useEffect
+    const fetchMediaData = async () => {
+      try {
+        // Reference to the "media" collection
+        const mediaCollection = collection(db, "media");
+
+        // Query to find the media document with the specified mediaId
+        const q = query(mediaCollection, where("id", "==", mediaId));
+        const mediaSnapshot = await getDocs(q);
+
+        if (!mediaSnapshot.empty) {
+          // Handle the media document found
+          const mediaDocRef = mediaSnapshot.docs[0].ref;
+          setIsOnMediaCollectionFirebase(true);
+        } else {
+          console.error("No media document found with ID: ", mediaId);
+          setIsOnMediaCollectionFirebase(false);
+        }
+      } catch (error) {
+        console.error("Error fetching media data: ", error);
+      }
+    };
+
+    // Call the asynchronous function
+    fetchMediaData();
+
+    // Cleanup function (optional)
+    return () => {
+      // Perform any cleanup if needed
+    };
+  }, [mediaId]); // Include mediaId in the dependency array if it changes
+
   // State to handle reply inputs
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const generateCommentId = async () => {
-    const { v4: uuidv4 } = await import('uuid'); // Dynamically import the uuid library
+    const { v4: uuidv4 } = await import("uuid"); // Dynamically import the uuid library
     return uuidv4(); // Generate and return the unique ID
   };
 
@@ -56,31 +77,31 @@ export default function CommentSection({
     const commentId = await generateCommentId();
     const mediaParams: MovieDetails = {
       id: mediaId,
-      mediaType: mediaType
-    }
+      mediaType: mediaType,
+      comments: [],
+    };
     if (!isOnMediaCollectionFirebase) {
       addMediaToMediaCollectionFirebase(mediaParams);
     }
     if (newComment.trim()) {
-      setComments([
-        ...comments,
-        {
-          id: commentId,
-          text: newComment,
-          authorId: uid,
-          authorUsername: username,
-          avatar: profilePic,
-          mediaId: mediaId,
-          mediaType: mediaType,
-          replies: [],
-        },
-      ]);
+      const newCommentObject = {
+        id: commentId,
+        text: newComment,
+        authorId: uid,
+        authorUsername: username,
+        avatar: profilePic,
+        mediaId: mediaId,
+        mediaType: mediaType,
+        replies: [],
+      };
+      setComments([...comments, newCommentObject]);
+      await addCommentToMedia(mediaId, newCommentObject);
       setNewComment("");
     }
   };
 
   // Handle reply submit
-  const handleReplySubmit = async(
+  const handleReplySubmit = async (
     e: FormEvent<HTMLFormElement>,
     commentId: string
   ) => {
@@ -102,7 +123,7 @@ export default function CommentSection({
                 authorUsername: username,
                 avatar: profilePic,
                 mediaId: mediaId,
-                mediaType
+                mediaType,
               },
             ],
           };
@@ -160,7 +181,10 @@ export default function CommentSection({
             <div key={comment.id} className="space-y-4 mb-4">
               <div className="flex space-x-4">
                 <Avatar>
-                  <AvatarImage src={comment.avatar} alt={comment.authorUsername} />
+                  <AvatarImage
+                    src={comment.avatar}
+                    alt={comment.authorUsername}
+                  />
                   <AvatarFallback>{comment.authorUsername[0]}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -177,8 +201,13 @@ export default function CommentSection({
                   {comment.replies.map((reply) => (
                     <div key={reply.id} className="flex space-x-4">
                       <Avatar>
-                        <AvatarImage src={reply.avatar} alt={reply.authorUsername} />
-                        <AvatarFallback>{reply.authorUsername[0]}</AvatarFallback>
+                        <AvatarImage
+                          src={reply.avatar}
+                          alt={reply.authorUsername}
+                        />
+                        <AvatarFallback>
+                          {reply.authorUsername[0]}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-semibold">{reply.authorUsername}</p>
