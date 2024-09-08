@@ -10,7 +10,6 @@ import { Comment } from "@/types/types";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { addMediaToMediaCollectionFirebase } from "@/utils/mediaService";
 import { addCommentToMedia } from "@/utils/commentService";
-// Define type for comment
 
 // Define props types for MovieComments
 interface MovieCommentsProps {
@@ -47,6 +46,32 @@ export default function CommentSection({
           // Handle the media document found
           const mediaDocRef = mediaSnapshot.docs[0].ref;
           setIsOnMediaCollectionFirebase(true);
+
+          // Reference to the "comments" subcollection of the media document
+          const commentsSubcollectionRef = collection(
+            db,
+            `media/${mediaDocRef.id}/comments`
+          );
+
+          /// Query to get all comments, excluding the document with name "initial"
+          const commentsQuery = query(
+            commentsSubcollectionRef,
+            where("id", "!=", "initial")
+          );
+          const commentsSnapshot = await getDocs(commentsQuery);
+          // Map comments snapshot to an array of comment objects
+          const fetchedComments: Comment[] = commentsSnapshot.docs.map(
+            (doc) => {
+              const data = doc.data() as Omit<Comment, "id">; // Exclude id from the spread
+              return {
+                id: doc.id, // Add id separately
+                ...data,
+              };
+            }
+          );
+
+          // Update state with fetched comments
+          setComments(fetchedComments);
         } else {
           setIsOnMediaCollectionFirebase(false);
         }
@@ -184,7 +209,9 @@ export default function CommentSection({
                     src={comment.avatar}
                     alt={comment.authorUsername}
                   />
-                  <AvatarFallback>{comment.authorUsername[0]}</AvatarFallback>
+                  <AvatarFallback>
+                    {comment.authorUsername ? comment.authorUsername[0] : "?"}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold">{comment.authorUsername}</p>
