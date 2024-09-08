@@ -47,7 +47,7 @@ const ClientMovieDetails = ({ id , mediaType}: MovieDetails) => {
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       <div className="relative">
         <h1 className="text-4xl font-bold mb-4 text-white">
-          {movieDetails.title}
+          {movieDetails.title || movieDetails.name}
         </h1>
       </div>
       <div className="flex flex-col md:flex-row gap-8 mt-8">

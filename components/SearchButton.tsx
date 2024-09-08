@@ -12,6 +12,7 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MovieDetails } from "@/types/types"; // Import your MovieDetails type
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SearchButton() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -54,6 +55,8 @@ export default function SearchButton() {
   };
 
   const handleShowMoreClick = () => {
+    setIsOpen(false);
+    setSearchQuery("");
     router.push(`/search-results?query=${searchQuery}`);
   };
 
@@ -87,11 +90,24 @@ export default function SearchButton() {
                 <ul className="space-y-2">
                   {results.map((result) => (
                     <li key={result.id} className="flex items-center space-x-4">
-                      <Link href={`/details/${result.mediaType}/${result.id}`} className="flex items-center space-x-4">
-                        <img
-                          src={`https://image.tmdb.org/t/p/w200${result.poster_path}`}
-                          alt={result.title}
+                      <Link
+                        href={`/details/${result.mediaType}/${result.id}`}
+                        className="flex items-center space-x-4"
+                        onClick={() => {
+                          setIsOpen(false);
+                          setSearchQuery("");
+                        }}
+                      >
+                        <Image
+                          src={
+                            result.poster_path
+                              ? `https://image.tmdb.org/t/p/w200${result.poster_path}`
+                              : "/images/movie-poster-placeholder.png"
+                          }
+                          alt={"Poster of " + result.title}
                           className="w-12 h-18 object-cover"
+                          width={12}
+                          height={12}
                         />
                         <div className="text-gray-200">
                           {result.title}
