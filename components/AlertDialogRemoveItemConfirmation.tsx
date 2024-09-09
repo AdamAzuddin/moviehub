@@ -43,25 +43,26 @@ export function AlertDialogRemoveItemConfirmation({
       <AlertDialogTrigger asChild>
         <Button
           variant="outline"
-          className="text-red-500 border-red-500 hover:bg-red-500 hover:border-red-500"
+          className="text-red-500 border-red-500 hover:bg-red-500 hover:border-red-500 cypress-remove"
         >
           <MinusCircleIcon />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogTitle className="cypress-alert-dialog-title">Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently remove{" "}
             {item.title || item.name || "this item"} from your {listType}.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="cypress-alert-dialog-cancel">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() =>
               handleRemoveFromList(uid, item.id, item.mediaType, listType)
             }
+            className="cypress-alert-dialog-action"
           >
             Continue
           </AlertDialogAction>

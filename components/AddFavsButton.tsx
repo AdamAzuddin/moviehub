@@ -17,7 +17,8 @@ const AddFavsButton: React.FC<MovieDetails> = ({ id, mediaType }) => {
   const { user } = useAuth(); // Get the current authenticated user
   const favourites = useStore((state) => state.favourites);
   const addToFavourites = useStore((state) => state.addToFavourites);
-  const [error, setError] = useState<string | null>(null); // Error state for user feedback
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleClick = async () => {
     if (!user) {
@@ -53,6 +54,11 @@ const AddFavsButton: React.FC<MovieDetails> = ({ id, mediaType }) => {
           });
           addToFavourites(item); // Pass the entire item object
           setError(null); // Clear any previous error messages
+          setSuccess("Item added to favourites!");
+          // Hide success message after 3 seconds
+          setTimeout(() => {
+            setSuccess(null);
+          }, 3000);
         }
       } else {
         setError("User data not found in Firestore.");
@@ -66,14 +72,13 @@ const AddFavsButton: React.FC<MovieDetails> = ({ id, mediaType }) => {
   return (
     <div>
       <button
-        className="bg-red-600 text-white p-3 rounded-full shadow-md hover:bg-red-700 transition"
+        className="bg-red-600 text-white p-3 rounded-full shadow-md hover:bg-red-700 transition cypress-add-to-favourites"
         onClick={handleClick}
       >
         <Heart className="w-4 h-4" />
       </button>
-      {error && (
-        <p className="text-red-500 mt-2">{error}</p>
-      )}
+      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {success && <p className="text-green-500 mt-2">{success}</p>}
     </div>
   );
 };

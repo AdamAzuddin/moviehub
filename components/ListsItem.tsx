@@ -1,11 +1,5 @@
-import React, { useState } from "react";
 import Image from "next/image";
-import { MovieDetails } from "@/types/types";
 import useMovieNavigation from "@/hooks/useMovieNavigation";
-import MinusCircleIcon from "./icons/MinusCircleIcon";
-import useRemoveFromFavourites from "@/hooks/useRemoveFromFavourites";
-import useRemoveFromWatchlist from "@/hooks/useRemoveFromWatchlist";
-import useStore from "@/store/store";
 import { AlertDialogRemoveItemConfirmation } from "./AlertDialogRemoveItemConfirmation";
 import { ListsItemProps } from "@/types/types";
 
