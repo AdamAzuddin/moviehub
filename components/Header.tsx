@@ -100,9 +100,6 @@ export default function Header() {
               ) : null}
             </div>
           </SheetContent>
-          <div className="ml-auto justify-end lg:hidden items-center">
-            <SearchButton />
-          </div>
         </Sheet>
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList>
@@ -154,8 +151,8 @@ export default function Header() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="hidden ml-auto lg:justify-end lg:flex items-center">
-          <SearchButton />
+        <div className="ml-auto lg:justify-end flex items-center lg:cypress-search-button">
+          <SearchButton/>
           {!user ? (
             <Link href={"/auth"}>
               <Button variant="outline">Sign In</Button>

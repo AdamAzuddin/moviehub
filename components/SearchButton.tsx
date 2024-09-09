@@ -69,7 +69,7 @@ export default function SearchButton() {
             size="icon"
             className="text-gray-200 hover:bg-gray-800"
           >
-            <Search className="h-5 w-5" />
+            <Search className="h-5 w-5 cypress-search-button" />
             <span className="sr-only">Search</span>
           </Button>
         </PopoverTrigger>
@@ -81,18 +81,18 @@ export default function SearchButton() {
               placeholder="Titles, people, genres"
               value={searchQuery}
               onChange={handleSearchChange}
-              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-200 bg-black placeholder:text-gray-500"
+              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-200 bg-black placeholder:text-gray-500 cypress-search-input"
             />
           </div>
           <div className="p-4">
             {results.length > 0 ? (
               <>
-                <ul className="space-y-2">
+                <ul className="space-y-2 ">
                   {results.map((result) => (
-                    <li key={result.id} className="flex items-center space-x-4">
+                    <li key={result.id} className="flex items-center space-x-4 cypress-search-result">
                       <Link
                         href={`/details/${result.mediaType}/${result.id}`}
-                        className="flex items-center space-x-4"
+                        className="flex items-center space-x-4 cypress-search-result-item"
                         onClick={() => {
                           setIsOpen(false);
                           setSearchQuery("");
@@ -121,7 +121,7 @@ export default function SearchButton() {
                 </ul>
                 <button
                   onClick={handleShowMoreClick}
-                  className="mt-4 text-blue-500 hover:underline"
+                  className="mt-4 text-blue-500 hover:underline cypress-show-more-button"
                 >
                   Show more results
                 </button>
