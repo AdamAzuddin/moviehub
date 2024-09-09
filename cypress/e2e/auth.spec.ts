@@ -68,4 +68,28 @@ describe("Authentication Tests", () => {
     // Ensure email error message is not visible
     cy.contains("Please enter a valid email address.").should("not.exist");
   });
+
+});
+
+describe("Sign in Functionality", () => {
+  it("should sign in using an account and redirect to the home page", () => {
+    cy.visit("/auth");
+    cy.get('input[id="email"]').type("max@gmail.com");
+    cy.get('input[id="password"]').type("test1234");
+    cy.get('button[type="submit"]').click();
+
+    cy.url().should("eq", Cypress.config().baseUrl + "/");
+  });
+});
+
+describe("Profile Page Functionality", () => {
+
+  beforeEach(() => {
+    cy.visit("/profile");
+  })
+  it("should visit profile page and see sign out button and sign out", () => {
+    
+    cy.get("button").contains("Sign Out").should("be.visible").click();
+  });
+
 });
