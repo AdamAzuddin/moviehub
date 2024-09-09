@@ -13,42 +13,27 @@ import { useRouter } from "next/navigation";
 import { MovieDetails } from "@/types/types"; // Import your MovieDetails type
 import Link from "next/link";
 import Image from "next/image";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
 
 export default function SearchButton() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [results, setResults] = useState<MovieDetails[]>([]); // Use MovieDetails type for results
+  const [results, setResults] = useState<MovieDetails[]>([]);
   const router = useRouter();
+  // Fetch search results using SWR
+  const { data: searchResults, error } = useSWR(
+    searchQuery ? `/api/search?query=${searchQuery}` : null,
+    fetcher
+  );
 
-  // Fetch from TMDB API when the search query changes
   useEffect(() => {
-    if (searchQuery.length > 0) {
-      const fetchResults = async () => {
-        try {
-          const response = await fetch(
-            `https://api.themoviedb.org/3/search/multi?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${searchQuery}`
-          );
-          const data = await response.json();
-
-          // Map API response to MovieDetails type
-          const moviesAndTVShows: MovieDetails[] = data.results
-            .slice(0, 5)
-            .map((item: any) => ({
-              id: item.id,
-              title: item.title || item.name, // For movies, it's `title`, for TV shows it's `name`
-              poster_path: item.poster_path,
-              mediaType: item.media_type === "tv" ? "tv" : "movie", // Determine if it's TV or movie
-            }));
-          setResults(moviesAndTVShows); // Limit to top 5 results
-        } catch (error) {
-          console.error("Error fetching data from TMDB", error);
-        }
-      };
-      fetchResults();
-    } else {
-      setResults([]); // Clear results when search query is empty
+    if (searchResults) {
+      setResults(searchResults);
+    } else if (error) {
+      console.error("Error fetching search results:", error);
     }
-  }, [searchQuery]);
+  }, [searchResults, error]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
