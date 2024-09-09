@@ -12,10 +12,14 @@ export async function GET(request) {
     actionMovies: `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&with_genres=28`,
     comedyMovies: `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&with_genres=35`,
     horrorMovies: `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&with_genres=27`,
+    sciFiMovies: `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&with_genres=878`,
+    romanceMovies: `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&with_genres=10749`,
     popularSeries: `${TMDB_BASE_URL}/tv/popular?api_key=${process.env.TMDB_API_KEY}`,
     dramaSeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=18`,
     sciFiSeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=10765`,
     comedySeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=35`,
+    familySeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=10751`,
+    documentarySeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=99`,
   };
 
   const endpoint = endpoints[type];

@@ -1,43 +1,20 @@
 "use client";
 
-import { TMDB_BASE_URL } from "@/constants/constants";
 import useSWR from "swr";
 import MovieCarousel from "@/components/MovieCarousel"; // Adjust the path as needed
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { fetcher } from "@/utils/fetcher";
 
 const MoviesPage = () => {
   const type = "movie";
-  // Fetch data for different genres of movies
-  const { data: popularMovies, error: popularError } = useSWR(
-    `${TMDB_BASE_URL}/${type}/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-    fetcher
-  );
-  const { data: topRatedMovies, error: topRatedError } = useSWR(
-    `${TMDB_BASE_URL}/${type}/top_rated?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-    fetcher
-  );
-  const { data: actionMovies, error: actionError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=28`,
-    fetcher
-  );
-  const { data: comedyMovies, error: comedyError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=35`,
-    fetcher
-  );
-  const { data: horrorMovies, error: horrorError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=27`,
-    fetcher
-  );
-  const { data: sciFiMovies, error: sciFiError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=878`,
-    fetcher
-  );
-  const { data: romanceMovies, error: romanceError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=10749`,
-    fetcher
-  );
+  const { data: popularMovies, error: popularError } = useSWR('/api/movies?type=popularMovies', fetcher);
+  const { data: topRatedMovies, error: topRatedError } = useSWR('/api/movies?type=topRatedMovies', fetcher);
+  const { data: actionMovies, error: actionError } = useSWR('/api/movies?type=actionMovies', fetcher);
+  const { data: comedyMovies, error: comedyError } = useSWR('/api/movies?type=comedyMovies', fetcher);
+  const { data: horrorMovies, error: horrorError } = useSWR('/api/movies?type=horrorMovies', fetcher);
+  const { data: sciFiMovies, error: sciFiError } = useSWR('/api/movies?type=sciFiMovies', fetcher);
+  const { data: romanceMovies, error: romanceError } = useSWR('/api/movies?type=romanceMovies', fetcher);
+
 
   if (
     popularError ||
