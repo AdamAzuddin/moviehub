@@ -1,41 +1,28 @@
-"use client";
-
-import useSWR from "swr";
-import Image from "next/image";
-import { TMDB_BASE_URL } from "@/constants/constants";
-import MovieCarousel from "@/components/MovieCarousel";
 import { useState } from "react";
-import AddFavsButton from "./AddFavsButton";
-import useStore from "@/store/store";
-import AddWatchlistButton from "./AddWatchlistButton";
-import { MovieDetails } from "@/types/types";
-import CommentSection from "./CommentSection";
+import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
+import AddFavsButton from "@/components/AddFavsButton";
+import AddWatchlistButton from "@/components/AddWatchlistButton";
+import CommentSection from "@/components/CommentSection";
+import MovieCarousel from "@/components/MovieCarousel";
+import useStore from "@/store/store";
+import { MovieDetails } from "@/types/types";
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const ClientMovieDetails = ({ id, mediaType }: MovieDetails) => {
-  // State to handle image error
+const ClientMovieDetails = ({ id, mediaType }: {id: number, mediaType: 'movie' | 'tv'}) => {
   const [imageError, setImageError] = useState(false);
+  
   const user = useStore((state) => state.user);
-
-  // Fetch movie details
-  const { data: movieDetails, error: movieError } = useSWR(
-    `${TMDB_BASE_URL}/${mediaType}/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+  const { data: movieDetails, error: movieDetailsError } = useSWR<MovieDetails>(
+    id ? `/api/details?type=${mediaType}&id=${id}` : null,
     fetcher
   );
-
-  // Fetch similar movies
   const { data: similarMovies, error: similarError } = useSWR(
-    id
-      ? `${TMDB_BASE_URL}/${mediaType}/${id}/similar?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
-      : null,
+    movieDetails ? `/api/similar?type=${mediaType}&id=${id}` : null,
     fetcher
   );
-
-  if (movieError || similarError) {
-    return <div>Failed to load</div>;
-  }
 
   if (!movieDetails || !similarMovies) {
     return (
@@ -62,7 +49,7 @@ const ClientMovieDetails = ({ id, mediaType }: MovieDetails) => {
               ? "/images/movie-poster-placeholder.png"
               : `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`
           }
-          alt={movieDetails.title}
+          alt={movieDetails.title || movieDetails.name || 'No title'}
           width={500}
           height={750}
           className="w-full md:w-1/4 h-auto object-cover rounded-md shadow-lg"
@@ -78,24 +65,22 @@ const ClientMovieDetails = ({ id, mediaType }: MovieDetails) => {
           </p>
           <p className="text-lg">
             <strong>Genres:</strong>{" "}
-            {movieDetails.genres.map((genre: any) => genre.name).join(", ")}
+            {movieDetails.genres?.map((genre: any) => genre.name).join(", ")}
           </p>
           {user ? (
             <div className="mt-4 flex gap-2">
-              <AddFavsButton id={id} mediaType={mediaType} />
-              <AddWatchlistButton id={id} mediaType={mediaType} />
+              <AddFavsButton id={movieDetails.id} mediaType={movieDetails.mediaType} overview={""} release_date={""} vote_average={0} />
+              <AddWatchlistButton id={movieDetails.id} mediaType={movieDetails.mediaType} />
             </div>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
       </div>
-      <CommentSection mediaId={id} mediaType={mediaType} />
+      {user && <CommentSection mediaId={movieDetails.id} mediaType={movieDetails.mediaType} />}
       <div className="mt-8">
         <MovieCarousel
           movies={similarMovies.results}
           title="You may also like"
-          type={mediaType}
+          type={movieDetails.mediaType}
         />
       </div>
     </div>
