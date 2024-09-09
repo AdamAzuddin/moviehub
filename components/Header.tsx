@@ -29,22 +29,22 @@ export default function Header() {
       <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
         {/* Mobile menu */}
         <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
-          <SheetTrigger asChild>
+          <SheetTrigger asChild >
             <Button
               variant="outline"
               size="icon"
               className="lg:hidden"
               onClick={() => setSheetOpen(true)}
             >
-              <MenuIcon className="h-6 w-6" />
+              <MenuIcon className="h-6 w-6 cypress-menu" />
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left">
+          <SheetContent side="left" className="cypress-close-menu">
             <Link href="/" prefetch={false} onClick={closeSheet}>
               <span className="sr-only">ShadCN</span>
             </Link>
-            <Link href="/profile" onClick={closeSheet}>
+            <Link href="/profile" onClick={closeSheet} className="cypress-avatar-mobile">
               <ProfileAvatar
                 profilePicUrl={
                   profilePic ? profilePic : "/images/default_profile_pic.jpg"
@@ -55,7 +55,7 @@ export default function Header() {
             <div className="grid gap-2 py-6">
               <Link
                 href="/"
-                className="flex w-full items-center py-2 text-lg font-semibold"
+                className="flex w-full items-center py-2 text-lg font-semibold cypress-menu-item"
                 prefetch={false}
                 onClick={closeSheet}
               >
@@ -63,7 +63,7 @@ export default function Header() {
               </Link>
               <Link
                 href="/movies"
-                className="flex w-full items-center py-2 text-lg font-semibold"
+                className="flex w-full items-center py-2 text-lg font-semibold cypress-menu-item"
                 prefetch={false}
                 onClick={closeSheet}
               >
@@ -71,7 +71,7 @@ export default function Header() {
               </Link>
               <Link
                 href="/series"
-                className="flex w-full items-center py-2 text-lg font-semibold"
+                className="flex w-full items-center py-2 text-lg font-semibold cypress-menu-item"
                 prefetch={false}
                 onClick={closeSheet}
               >
@@ -79,7 +79,7 @@ export default function Header() {
               </Link>
               <Link
                 href="/watchlist"
-                className="flex w-full items-center py-2 text-lg font-semibold"
+                className="flex w-full items-center py-2 text-lg font-semibold cypress-menu-item"
                 prefetch={false}
                 onClick={closeSheet}
               >
@@ -87,7 +87,7 @@ export default function Header() {
               </Link>
               <Link
                 href="/favourites"
-                className="flex w-full items-center py-2 text-lg font-semibold"
+                className="flex w-full items-center py-2 text-lg font-semibold cypress-menu-item"
                 prefetch={false}
                 onClick={closeSheet}
               >
@@ -95,7 +95,7 @@ export default function Header() {
               </Link>
               {!user ? (
                 <Link href="/auth" onClick={closeSheet}>
-                  <Button variant="outline">Sign In</Button>
+                  <Button variant="outline" className="cypress-menu-item">Sign In</Button>
                 </Link>
               ) : null}
             </div>
@@ -161,7 +161,7 @@ export default function Header() {
               <Button variant="outline">Sign In</Button>
             </Link>
           ) : (
-            <Link href={"/profile"}>
+            <Link href={"/profile"} className="cypress-avatar-desktop">
               <ProfileAvatar
                 profilePicUrl={
                   profilePic ? profilePic : "/images/default_profile_pic.jpg"
