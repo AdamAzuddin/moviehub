@@ -19,7 +19,7 @@ export default function MovieBanner({ movies, type }: MovieBannerProps) {
       <Carousel className="w-full">
         <CarouselContent>
           {movies.map((movie: Movie) => (
-            <CarouselItem key={movie.id} onClick={() => handleMovieClick(movie.id,type)} className="cursor-pointer">
+            <CarouselItem key={movie.id} onClick={() => handleMovieClick(movie.id,type)} className="cursor-pointer cypress-banner-item">
               <div className="relative rounded-lg overflow-hidden shadow-lg">
                 <Image
                   src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
@@ -39,10 +39,10 @@ export default function MovieBanner({ movies, type }: MovieBannerProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-gray-300 transition-colors">
+        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-gray-300 transition-colors cypress-chevron-left">
           <ChevronLeftIcon className="h-8 w-8" />
         </CarouselPrevious>
-        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-gray-300 transition-colors">
+        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-gray-300 transition-colors cypress-chevron-right">
           <ChevronRightIcon className="h-8 w-8" />
         </CarouselNext>
       </Carousel>

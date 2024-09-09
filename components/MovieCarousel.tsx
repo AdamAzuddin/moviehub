@@ -38,7 +38,7 @@ export default function MovieCarousel({ movies, title, type }: MovieCarouselProp
           {movies.map((movie) => (
             <CarouselItem
               key={movie.id}
-              className="pl-1 sm:pl-2 md:pl-3 lg:pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
+              className="pl-1 sm:pl-2 md:pl-3 lg:pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6 cypress-carousel-item"
             >
               <div
                 className="relative group cursor-pointer" // Added cursor-pointer for clickable
@@ -67,10 +67,10 @@ export default function MovieCarousel({ movies, title, type }: MovieCarouselProp
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden md:flex -left-12 bg-transparent border-none hover:bg-transparent">
+        <CarouselPrevious className="hidden md:flex -left-12 bg-transparent border-none hover:bg-transparent cypress-chevron-left">
           <ChevronLeft className="w-8 h-8 text-white" />
         </CarouselPrevious>
-        <CarouselNext className="hidden md:flex -right-12 bg-transparent border-none hover:bg-transparent">
+        <CarouselNext className="hidden md:flex -right-12 bg-transparent border-none hover:bg-transparent cypress-chevron-right">
           <ChevronRight className="w-8 h-8 text-white" />
         </CarouselNext>
       </Carousel>
