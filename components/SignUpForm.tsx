@@ -89,7 +89,7 @@ export default function SignUpForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
+        <CardTitle className="text-2xl font-bold auth-title">Sign Up</CardTitle>
         <CardDescription>Create an account by filling the form below</CardDescription>
       </CardHeader>
       <UploadProfilePic onFileSelect={setSelectedFile} />
