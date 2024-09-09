@@ -7,6 +7,7 @@ import { query, where, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { MovieDetails, ListsItem } from "@/types/types";
 import ListsItemComponent from "@/components/ListsItem";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // Fetch favorites from Firebase
 const fetchFavouritesFromFirebase = async (
@@ -67,7 +68,12 @@ const FavouritesPage: React.FC = () => {
     fetchData();
   }, [user, resetFavourites, addToFavourites, favorites]);
 
-  if (loading) return <div>Loading favourites...</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen w-screen">
+        <LoadingSpinner className="w-8 h-8" />
+      </div>
+    );
   if (error) return <div>{error}</div>;
 
   return (
@@ -79,7 +85,11 @@ const FavouritesPage: React.FC = () => {
           <h1 className="text-2xl lg:text-4xl font-bold">Your Favourites</h1>
           <div className="flex">
             {items.map((item) => (
-              <ListsItemComponent key={item.id} item={item} listType="favourites"/>
+              <ListsItemComponent
+                key={item.id}
+                item={item}
+                listType="favourites"
+              />
             ))}
           </div>
         </div>

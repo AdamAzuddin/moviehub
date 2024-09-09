@@ -10,10 +10,11 @@ import useStore from "@/store/store";
 import AddWatchlistButton from "./AddWatchlistButton";
 import { MovieDetails } from "@/types/types";
 import CommentSection from "./CommentSection";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const ClientMovieDetails = ({ id , mediaType}: MovieDetails) => {
+const ClientMovieDetails = ({ id, mediaType }: MovieDetails) => {
   // State to handle image error
   const [imageError, setImageError] = useState(false);
   const user = useStore((state) => state.user);
@@ -37,7 +38,11 @@ const ClientMovieDetails = ({ id , mediaType}: MovieDetails) => {
   }
 
   if (!movieDetails || !similarMovies) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen w-screen">
+        <LoadingSpinner className="w-8 h-8" />
+      </div>
+    );
   }
 
   // Handle image load error
@@ -77,15 +82,15 @@ const ClientMovieDetails = ({ id , mediaType}: MovieDetails) => {
           </p>
           {user ? (
             <div className="mt-4 flex gap-2">
-              <AddFavsButton id={id} mediaType={mediaType}/>
-              <AddWatchlistButton id={id} mediaType={mediaType}/>
+              <AddFavsButton id={id} mediaType={mediaType} />
+              <AddWatchlistButton id={id} mediaType={mediaType} />
             </div>
           ) : (
             <></>
           )}
         </div>
       </div>
-      <CommentSection mediaId={id} mediaType={mediaType}/>
+      <CommentSection mediaId={id} mediaType={mediaType} />
       <div className="mt-8">
         <MovieCarousel
           movies={similarMovies.results}

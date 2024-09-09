@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import useStore from '@/store/store';
-import { useAuth } from '@/hooks/useAuth';
-import { fetchMovieDetails } from '@/lib/tmdb';
+import React, { useEffect, useState } from "react";
+import useStore from "@/store/store";
+import { useAuth } from "@/hooks/useAuth";
+import { fetchMovieDetails } from "@/lib/tmdb";
 import { query, where, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { MovieDetails, ListsItem } from '@/types/types';
-import ListsItemComponent from '@/components/ListsItem';
+import { MovieDetails, ListsItem } from "@/types/types";
+import ListsItemComponent from "@/components/ListsItem";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // Fetch watchlist from Firebase
-const fetchWatchlistFromFirebase = async (uid: string): Promise<ListsItem[]> => {
+const fetchWatchlistFromFirebase = async (
+  uid: string
+): Promise<ListsItem[]> => {
   const q = query(collection(db, "users"), where("uid", "==", uid));
   const querySnapshot = await getDocs(q);
 
@@ -26,7 +29,7 @@ const WatchlistPage: React.FC = () => {
   const { user } = useAuth();
   const resetWatchlist = useStore((state) => state.resetWatchlist);
   const addToWatchlist = useStore((state) => state.addToWatchlist);
-  const [items, setItems] = useState<MovieDetails[]>([]); 
+  const [items, setItems] = useState<MovieDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const watchlist = useStore((state) => state.watchlist);
@@ -63,7 +66,12 @@ const WatchlistPage: React.FC = () => {
     fetchData();
   }, [user, resetWatchlist, addToWatchlist, watchlist]);
 
-  if (loading) return <div>Loading watchlist...</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen w-screen">
+        <LoadingSpinner className="w-8 h-8" />
+      </div>
+    );
   if (error) return <div>{error}</div>;
 
   return (
@@ -75,7 +83,11 @@ const WatchlistPage: React.FC = () => {
           <h1 className="text-2xl lg:text-4xl font-bold">Your Watchlist</h1>
           <div className="flex">
             {items.map((item) => (
-              <ListsItemComponent key={item.id} item={item} listType='watchlist'/>
+              <ListsItemComponent
+                key={item.id}
+                item={item}
+                listType="watchlist"
+              />
             ))}
           </div>
         </div>

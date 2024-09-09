@@ -1,4 +1,5 @@
 "use client";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import Image from "next/image";
@@ -41,8 +42,8 @@ const OtherUserProfilePage = ({ params }: { params: { uid: string } }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
+      <div className="flex items-center justify-center h-screen w-screen">
+        <LoadingSpinner className="w-8 h-8" />
       </div>
     );
   }

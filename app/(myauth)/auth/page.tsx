@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import SignInForm from '@/components/SignInForm';
 import SignUpForm from '@/components/SignUpForm';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-
 const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
 
