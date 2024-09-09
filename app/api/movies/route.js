@@ -20,7 +20,10 @@ export async function GET(request) {
     comedySeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=35`,
     familySeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=10751`,
     documentarySeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=99`,
+    mysterySeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=9648`,
+    actionSeries: `${TMDB_BASE_URL}/discover/tv?api_key=${process.env.TMDB_API_KEY}&with_genres=10759`,
   };
+
 
   const endpoint = endpoints[type];
 

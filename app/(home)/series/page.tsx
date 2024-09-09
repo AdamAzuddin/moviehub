@@ -2,38 +2,18 @@
 
 import useSWR from "swr";
 import MovieCarousel from "@/components/MovieCarousel"; // Adjust the path as needed
-import { TMDB_BASE_URL } from "@/constants/constants";
+import { fetcher } from "@/utils/fetcher";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const SeriesPage = () => {
   const type = "tv";
   // Fetch data for different genres of TV series
-  const { data: popularSeries, error: popularError } = useSWR(
-    `${TMDB_BASE_URL}/${type}/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-    fetcher
-  );
-  const { data: dramaSeries, error: dramaError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=18`,
-    fetcher
-  );
-  const { data: comedySeries, error: comedyError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=35`,
-    fetcher
-  );
-  const { data: sciFiSeries, error: sciFiError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=10765`,
-    fetcher
-  );
-  const { data: mysterySeries, error: mysteryError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=9648`,
-    fetcher
-  );
-  const { data: actionSeries, error: actionError } = useSWR(
-    `${TMDB_BASE_URL}/discover/${type}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&with_genres=10759`,
-    fetcher
-  );
+  const { data: popularSeries, error: popularError } = useSWR('/api/movies?type=popularSeries', fetcher);
+  const { data: dramaSeries, error: dramaError } = useSWR('/api/movies?type=dramaSeries', fetcher);
+  const { data: comedySeries, error: comedyError } = useSWR('/api/movies?type=comedySeries', fetcher);
+  const { data: sciFiSeries, error: sciFiError } = useSWR('/api/movies?type=sciFiSeries', fetcher);
+  const { data: mysterySeries, error: mysteryError } = useSWR('/api/movies?type=mysterySeries', fetcher);
+  const { data: actionSeries, error: actionError } = useSWR('/api/movies?type=actionSeries', fetcher);
 
   if (
     popularError ||
