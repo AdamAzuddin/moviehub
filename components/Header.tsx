@@ -9,32 +9,42 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import SearchButton from "./SearchButton";
-import React from "react";
+import React, { useState } from "react";
 import { ProfileAvatar } from "./ProfileAvatar";
 import useStore from "@/store/store";
 import MenuIcon from "./icons/MenuIcon";
 
 export default function Header() {
-  const user  = useStore((state) => state.user);
+  const user = useStore((state) => state.user);
   const profilePic = useStore((state) => state.profilePic);
   const username = useStore((state) => state.username);
+  const [isSheetOpen, setSheetOpen] = useState(false);
+
+  const closeSheet = () => {
+    setSheetOpen(false);
+  };
 
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8">
       <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
         {/* Mobile menu */}
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="lg:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setSheetOpen(true)}
+            >
               <MenuIcon className="h-6 w-6" />
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
-            <Link href="/" prefetch={false}>
+            <Link href="/" prefetch={false} onClick={closeSheet}>
               <span className="sr-only">ShadCN</span>
             </Link>
-            <Link href={"/profile"}>
+            <Link href="/profile" onClick={closeSheet}>
               <ProfileAvatar
                 profilePicUrl={
                   profilePic ? profilePic : "/images/default_profile_pic.jpg"
@@ -47,6 +57,7 @@ export default function Header() {
                 href="/"
                 className="flex w-full items-center py-2 text-lg font-semibold"
                 prefetch={false}
+                onClick={closeSheet}
               >
                 Home
               </Link>
@@ -54,6 +65,7 @@ export default function Header() {
                 href="/movies"
                 className="flex w-full items-center py-2 text-lg font-semibold"
                 prefetch={false}
+                onClick={closeSheet}
               >
                 Movies
               </Link>
@@ -61,6 +73,7 @@ export default function Header() {
                 href="/series"
                 className="flex w-full items-center py-2 text-lg font-semibold"
                 prefetch={false}
+                onClick={closeSheet}
               >
                 TV Series
               </Link>
@@ -68,6 +81,7 @@ export default function Header() {
                 href="/watchlist"
                 className="flex w-full items-center py-2 text-lg font-semibold"
                 prefetch={false}
+                onClick={closeSheet}
               >
                 Watchlist
               </Link>
@@ -75,16 +89,15 @@ export default function Header() {
                 href="/favourites"
                 className="flex w-full items-center py-2 text-lg font-semibold"
                 prefetch={false}
+                onClick={closeSheet}
               >
                 Favourites
               </Link>
               {!user ? (
-                <Link href={"/auth"}>
+                <Link href="/auth" onClick={closeSheet}>
                   <Button variant="outline">Sign In</Button>
                 </Link>
-              ) : (
-                <></>
-              )}
+              ) : null}
             </div>
           </SheetContent>
           <div className="ml-auto justify-end lg:hidden items-center">
@@ -161,5 +174,3 @@ export default function Header() {
     </div>
   );
 }
-
-
