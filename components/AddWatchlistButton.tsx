@@ -12,15 +12,10 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
 
-interface AddWatchlistButtonProps {
-  id: number;
-  mediaType: "movie" | "tv";
-}
-
-const AddWatchlistButton: React.FC<AddWatchlistButtonProps> = ({
+const AddWatchlistButton= ({
   id,
   mediaType,
-}) => {
+}: {id: number, mediaType: 'movie' | 'tv'}) => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const { user } = useAuth();

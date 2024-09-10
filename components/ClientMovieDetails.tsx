@@ -15,11 +15,11 @@ const ClientMovieDetails = ({ id, mediaType }: {id: number, mediaType: 'movie' |
   const [imageError, setImageError] = useState(false);
   
   const user = useStore((state) => state.user);
-  const { data: movieDetails, error: movieDetailsError } = useSWR<MovieDetails>(
+  const { data: movieDetails} = useSWR<MovieDetails>(
     id ? `/api/details?type=${mediaType}&id=${id}` : null,
     fetcher
   );
-  const { data: similarMovies, error: similarError } = useSWR(
+  const { data: similarMovies} = useSWR(
     movieDetails ? `/api/similar?type=${mediaType}&id=${id}` : null,
     fetcher
   );
@@ -69,7 +69,7 @@ const ClientMovieDetails = ({ id, mediaType }: {id: number, mediaType: 'movie' |
           </p>
           {user ? (
             <div className="mt-4 flex gap-2">
-              <AddFavsButton id={movieDetails.id} mediaType={movieDetails.mediaType} overview={""} release_date={""} vote_average={0} />
+              <AddFavsButton id={movieDetails.id} mediaType={movieDetails.mediaType}/>
               <AddWatchlistButton id={movieDetails.id} mediaType={movieDetails.mediaType} />
             </div>
           ) : null}

@@ -11,9 +11,8 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
-import { MovieDetails } from "@/types/types";
 
-const AddFavsButton: React.FC<MovieDetails> = ({ id, mediaType }) => {
+const AddFavsButton = ({ id, mediaType }: {id: number, mediaType: 'movie' | 'tv'}) => {
   const { user } = useAuth(); // Get the current authenticated user
   const favourites = useStore((state) => state.favourites);
   const addToFavourites = useStore((state) => state.addToFavourites);

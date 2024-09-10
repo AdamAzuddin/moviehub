@@ -44,6 +44,7 @@ export interface Movie {
   poster_path: string | null;
   release_date: string;
   title: string;
+  name?:string;
   video: boolean;
   vote_average: number;
   vote_count: number;
@@ -76,7 +77,7 @@ export interface MovieDetails{
   vote_average: number;
   poster_path?: string;
   genres?: string[];
-  mediaType: 'movie' | 'tv';
+  mediaType: "movie" | "tv";
   comments?: Comment[];
 }
 

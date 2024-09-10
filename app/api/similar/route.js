@@ -4,6 +4,7 @@ import { TMDB_BASE_URL } from '@/constants/constants';
 
 export async function GET(request) {
   const url = new URL(request.url);
+  //TODO: Add type and id validation
   const type = url.searchParams.get('type');
   const id = url.searchParams.get('id');
 

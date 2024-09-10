@@ -1,7 +1,7 @@
 import { TMDB_BASE_URL } from '@/constants/constants';
 import axios from 'axios';
 
-const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const API_KEY = process.env.TMDB_API_KEY;
 
 const apiClient = axios.create({
   baseURL: TMDB_BASE_URL,
@@ -23,8 +23,9 @@ export const fetchMovies = async (endpoint: string, params: object = {}) => {
 
 export const fetchMovieDetails = async (movieId: number, type: 'movie' | 'tv') => {
   try {
+    //console.log(movieId)
     const response = await fetch(
-      `${TMDB_BASE_URL}/${type}/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+      `${TMDB_BASE_URL}/${type}/${movieId}?api_key=${process.env.TMDB_API_KEY}`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch movie details");

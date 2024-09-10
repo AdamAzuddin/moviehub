@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -18,7 +17,7 @@ interface MovieCarouselProps {
 export default function MovieCarousel({ movies, title, type }: MovieCarouselProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [imageError, setImageError] = useState<{ [key: number]: boolean }>({});
-  const { handleMovieClick } = useMovieNavigation(); // Use the custom hook
+  const { handleMovieClick } = useMovieNavigation();
 
   const handleImageError = (id: number) => {
     setImageError((prev) => ({ ...prev, [id]: true }));
@@ -50,7 +49,7 @@ export default function MovieCarousel({ movies, title, type }: MovieCarouselProp
                   <CardContent className="p-0 relative">
                     <Image
                       src={imageError[movie.id] ? "/images/movie-poster-placeholder.png" : `https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                      alt={movie.title}
+                      alt={movie.title || movie.name || "Movie Poster"}
                       width={200}
                       height={300}
                       className="w-full h-auto object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"

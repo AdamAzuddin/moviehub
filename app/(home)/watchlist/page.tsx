@@ -9,6 +9,8 @@ import { db } from "@/lib/firebase";
 import { MovieDetails, ListsItem } from "@/types/types";
 import ListsItemComponent from "@/components/ListsItem";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
 
 // Fetch watchlist from Firebase
 const fetchWatchlistFromFirebase = async (
@@ -49,12 +51,14 @@ const WatchlistPage: React.FC = () => {
 
         // Fetch movie details for each watchlist item
         const itemDetailsPromises = fetchedWatchlist.map(async (item) => {
-          const details = await fetchMovieDetails(item.id, item.mediaType);
-          return { ...details, mediaType: item.mediaType }; // Append mediaType
+          const response = await fetch(`/api/details?type=${item.mediaType}&id=${item.id}`);
+          const movieDetails = await response.json();
+          //const details = await fetchMovieDetails(item.id, item.mediaType);
+          return { ...movieDetails, mediaType: item.mediaType };
         });
 
         const itemsDetails = await Promise.all(itemDetailsPromises);
-        setItems(itemsDetails); // Set fetched details into state
+        setItems(itemsDetails as MovieDetails[]); // Set fetched details into state
       } catch (err) {
         console.error("Error fetching watchlist:", err);
         setError("Error loading watchlist.");
