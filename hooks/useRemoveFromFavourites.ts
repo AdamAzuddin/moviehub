@@ -24,7 +24,14 @@ const useRemoveFromFavourites = () => {
       const favourites = userData.favourites || [];
 
       // Find the index of the object that matches movieId
-      const indexToRemove = favourites.findIndex((item: { id: string }) => item.id === movieId.toString());
+      const indexToRemove = favourites.findIndex((item: { id: number }) => item.id === movieId);
+
+      if (indexToRemove){
+        console.log(indexToRemove)
+      }
+      else{
+        console.log("Index to remove not found")
+      }
 
       // If the item is found, remove it
       if (indexToRemove !== -1) {

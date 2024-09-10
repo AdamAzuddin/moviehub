@@ -72,9 +72,9 @@ export interface MovieDetails{
   id: number;
   title?: string;
   name?: string;
-  overview: string;
-  release_date: string;
-  vote_average: number;
+  overview?: string;
+  release_date?: string;
+  vote_average?: number;
   poster_path?: string;
   genres?: string[];
   mediaType: "movie" | "tv";

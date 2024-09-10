@@ -69,13 +69,13 @@ const ClientMovieDetails = ({ id, mediaType }: {id: number, mediaType: 'movie' |
           </p>
           {user ? (
             <div className="mt-4 flex gap-2">
-              <AddFavsButton id={movieDetails.id} mediaType={movieDetails.mediaType}/>
-              <AddWatchlistButton id={movieDetails.id} mediaType={movieDetails.mediaType} />
+              <AddFavsButton id={movieDetails.id} mediaType={mediaType}/>
+              <AddWatchlistButton id={movieDetails.id} mediaType={mediaType} />
             </div>
           ) : null}
         </div>
       </div>
-      {user && <CommentSection mediaId={movieDetails.id} mediaType={movieDetails.mediaType} />}
+      {user && <CommentSection mediaId={movieDetails.id} mediaType={mediaType} />}
       <div className="mt-8">
         <MovieCarousel
           movies={similarMovies.results}

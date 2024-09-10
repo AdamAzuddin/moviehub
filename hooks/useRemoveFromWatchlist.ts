@@ -24,7 +24,7 @@ const useRemoveFromWatchlist = () => {
       const watchlist = userData.watchlist || [];
 
       // Find the index of the object that matches movieId
-      const indexToRemove = watchlist.findIndex((item: { id: string }) => item.id === movieId.toString());
+      const indexToRemove = watchlist.findIndex((item: { id: number }) => item.id === movieId);
 
       // If the item is found, remove it
       if (indexToRemove !== -1) {

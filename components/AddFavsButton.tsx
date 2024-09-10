@@ -12,7 +12,13 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
 
-const AddFavsButton = ({ id, mediaType }: {id: number, mediaType: 'movie' | 'tv'}) => {
+const AddFavsButton = ({
+  id,
+  mediaType,
+}: {
+  id: number;
+  mediaType: "movie" | "tv";
+}) => {
   const { user } = useAuth(); // Get the current authenticated user
   const favourites = useStore((state) => state.favourites);
   const addToFavourites = useStore((state) => state.addToFavourites);
@@ -34,6 +40,7 @@ const AddFavsButton = ({ id, mediaType }: {id: number, mediaType: 'movie' | 'tv'
       if (!userSnapshot.empty) {
         // Assuming there's only one document per user
         const userDocRef = userSnapshot.docs[0].ref;
+        console.log("id", id, " mediaType", mediaType);
 
         // Create an item object with movieId and type
         const item = { id, mediaType };
@@ -51,8 +58,8 @@ const AddFavsButton = ({ id, mediaType }: {id: number, mediaType: 'movie' | 'tv'
           await updateDoc(userDocRef, {
             favourites: arrayUnion(item),
           });
-          addToFavourites(item); // Pass the entire item object
-          setError(null); // Clear any previous error messages
+          addToFavourites(item);
+          setError(null);
           setSuccess("Item added to favourites!");
           // Hide success message after 3 seconds
           setTimeout(() => {
@@ -63,7 +70,7 @@ const AddFavsButton = ({ id, mediaType }: {id: number, mediaType: 'movie' | 'tv'
         setError("User data not found in Firestore.");
       }
     } catch (error) {
-      setError("Error updating favourites. Please try again.");
+      setError("Error updating favourites." + error);
       console.error("Error updating favourites:", error);
     }
   };
