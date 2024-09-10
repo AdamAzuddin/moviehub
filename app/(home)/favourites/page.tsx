@@ -50,8 +50,9 @@ const FavouritesPage: React.FC = () => {
 
         // Fetch the movie details after populating the Zustand store
         const itemDetailsPromises = fetchedFavourites.map(async (item) => {
-          const details = await fetchMovieDetails(item.id, item.mediaType);
-          return { ...details, mediaType: item.mediaType };
+          const response = await fetch(`/api/details?type=${item.mediaType}&id=${item.id}`);
+          const movieDetails = await response.json();
+          return { ...movieDetails, mediaType: item.mediaType };
         });
         const itemsDetails = await Promise.all(itemDetailsPromises);
 
