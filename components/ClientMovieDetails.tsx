@@ -80,7 +80,7 @@ const ClientMovieDetails = ({ id, mediaType }: {id: number, mediaType: 'movie' |
         <MovieCarousel
           movies={similarMovies.results}
           title="You may also like"
-          type={movieDetails.mediaType}
+          type={mediaType}
         />
       </div>
     </div>

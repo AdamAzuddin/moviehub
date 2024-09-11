@@ -30,6 +30,7 @@ export default function CommentSection({
   const [isOnMediaCollectionFirebase, setIsOnMediaCollectionFirebase] =
     useState(false);
   const [visibleReplies, setVisibleReplies] = useState<{ [key: string]: boolean }>({});
+  const user = useStore((state) => state.user);
   const uid = useStore((state) => state.uid);
   const username = useStore((state) => state.username);
   const profilePic = useStore((state) => state.profilePic);
@@ -98,7 +99,6 @@ export default function CommentSection({
     fetchMediaData();
   
     return () => {
-      // Cleanup if needed
     };
   }, [mediaId]);
   
