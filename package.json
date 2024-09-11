@@ -1,6 +1,6 @@
 {
   "name": "moviehub",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "test": "next build && concurrently --kill-others \"next start\" \"npm run cypress:run\""
   },
   "dependencies": {
     "@eslint/config-array": "^0.18.0",
@@ -25,6 +26,7 @@
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "concurrently": "^9.0.0",
     "embla-carousel-react": "^8.2.0",
     "firebase": "^10.13.1",
     "lru-cache": "^11.0.0",
