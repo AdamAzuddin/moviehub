@@ -7,18 +7,12 @@ import useStore from "@/store/store";
 import { MovieDetails, Reply } from "@/types/types";
 import { db } from "@/lib/firebase";
 import { Comment } from "@/types/types";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { addMediaToMediaCollectionFirebase } from "@/utils/mediaService";
 import { addCommentToMedia } from "@/utils/commentService";
 import { CommentSectionProps } from "@/types/types";
 import CommentAvatar from "./CommentAvatar";
-
+import Link from "next/link";
 
 export default function CommentSection({
   commentCount = 0,
@@ -29,7 +23,9 @@ export default function CommentSection({
   const [newComment, setNewComment] = useState<string>("");
   const [isOnMediaCollectionFirebase, setIsOnMediaCollectionFirebase] =
     useState(false);
-  const [visibleReplies, setVisibleReplies] = useState<{ [key: string]: boolean }>({});
+  const [visibleReplies, setVisibleReplies] = useState<{
+    [key: string]: boolean;
+  }>({});
   const user = useStore((state) => state.user);
   const uid = useStore((state) => state.uid);
   const username = useStore((state) => state.username);
@@ -41,33 +37,33 @@ export default function CommentSection({
         const mediaCollection = collection(db, "media");
         const q = query(mediaCollection, where("id", "==", mediaId));
         const mediaSnapshot = await getDocs(q);
-  
+
         if (!mediaSnapshot.empty) {
           const mediaDocRef = mediaSnapshot.docs[0].ref;
           setIsOnMediaCollectionFirebase(true);
-  
+
           const commentsSubcollectionRef = collection(
             db,
             `media/${mediaDocRef.id}/comments`
           );
-  
+
           const commentsQuery = query(
             commentsSubcollectionRef,
             where("id", "!=", "initial")
           );
           const commentsSnapshot = await getDocs(commentsQuery);
-  
+
           const fetchedComments: Comment[] = await Promise.all(
             commentsSnapshot.docs.map(async (doc) => {
               const data = doc.data() as Omit<Comment, "id" | "replies">;
               const commentId = doc.id;
-  
+
               // Reference to the replies subcollection
               const repliesSubcollectionRef = collection(
                 db,
                 `media/${mediaDocRef.id}/comments/${commentId}/replies`
               );
-  
+
               // Query to exclude replies with id == "initial"
               const repliesQuery = query(
                 repliesSubcollectionRef,
@@ -78,7 +74,7 @@ export default function CommentSection({
                 id: replyDoc.id,
                 ...replyDoc.data(),
               })) as Reply[]; // Cast to Reply type
-  
+
               return {
                 id: commentId,
                 ...data,
@@ -86,7 +82,7 @@ export default function CommentSection({
               };
             })
           );
-  
+
           setComments(fetchedComments);
         } else {
           setIsOnMediaCollectionFirebase(false);
@@ -95,17 +91,15 @@ export default function CommentSection({
         console.error("Error fetching media data: ", error);
       }
     };
-  
+
     fetchMediaData();
-  
-    return () => {
-    };
+
+    return () => {};
   }, [mediaId]);
-  
-  
+
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const generateCommentId = async () => {
-    const { v4: uuidv4 } = await import("uuid"); 
+    const { v4: uuidv4 } = await import("uuid");
     return uuidv4();
   };
 
@@ -226,90 +220,119 @@ export default function CommentSection({
         Comments ({commentCount + comments.length})
       </h2>
 
-      <form onSubmit={handleCommentSubmit} className="mb-6">
-        <div className="flex items-start space-x-4">
-          <Avatar>
-            <AvatarImage src={profilePic} alt={username} />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-          <div className="flex-grow">
-            <Textarea
-              placeholder={`Add a comment`}
-              value={newComment}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                setNewComment(e.target.value)
-              }
-              className="w-full min-h-[80px]"
-            />
-            <Button type="submit" className="mt-2">
-              Comment
-            </Button>
-          </div>
-        </div>
-      </form>
-
-      <ScrollArea className="h-[400px] rounded-md border p-4">
-        {comments.length === 0 && commentCount === 0 ? (
-          <p className="text-center text-muted-foreground">
-            No comments yet. Be the first to comment!
-          </p>
-        ) : (
-          comments.map((comment) => (
-            <div key={comment.id} className="space-y-4 mb-4">
-              <div className="flex space-x-4">
-                <CommentAvatar username={comment.authorUsername} profilePic={comment.avatar} uid={comment.authorId}/>
-                <div>
-                  <p className="font-semibold">{comment.authorUsername}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {comment.text}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <button
-                  onClick={() => toggleRepliesVisibility(comment.id)}
-                  className="text-blue-500"
-                >
-                  {visibleReplies[comment.id]
-                    ? "Hide Replies"
-                    : "Show Replies"}
-                </button>
-                {visibleReplies[comment.id] && (
-                  <div className="ml-6">
-                    {comment.replies.map((reply) => (
-                      <div key={reply.id} className="flex items-start space-x-4 mb-2">
-                        <Avatar>
-                          <AvatarImage src={reply.avatar} alt={reply.authorUsername} />
-                          <AvatarFallback>
-                            {reply.authorUsername ? reply.authorUsername[0] : "?"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-semibold">{reply.authorUsername}</p>
-                          <p>{reply.text}</p>
-                        </div>
-                      </div>
-                    ))}
-                    <form
-                      onSubmit={(e) => handleReplySubmit(e, comment.id)}
-                      className="mt-2"
-                    >
-                      <Textarea
-                        placeholder={`Reply to ${comment.authorUsername}`}
-                        value={replyInputs[comment.id] || ""}
-                        onChange={(e) => handleReplyInputChange(e, comment.id)}
-                      />
-                      <Button type="submit" className="mt-2">
-                        Reply
-                      </Button>
-                    </form>
-                  </div>
-                )}
+      {user ? (
+        <>
+          <form onSubmit={handleCommentSubmit} className="mb-6">
+            <div className="flex items-start space-x-4">
+              <Avatar>
+                <AvatarImage src={profilePic} alt={username} />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+              <div className="flex-grow">
+                <Textarea
+                  placeholder={`Add a comment`}
+                  value={newComment}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                    setNewComment(e.target.value)
+                  }
+                  className="w-full min-h-[80px]"
+                />
+                <Button type="submit" className="mt-2">
+                  Comment
+                </Button>
               </div>
             </div>
-          ))
-        )}
-      </ScrollArea>
+          </form>
+
+          <ScrollArea className="h-[400px] rounded-md border p-4">
+            {comments.length === 0 && commentCount === 0 ? (
+              <p className="text-center text-muted-foreground">
+                No comments yet. Be the first to comment!
+              </p>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment.id} className="space-y-4 mb-4">
+                  <div className="flex space-x-4">
+                    <CommentAvatar
+                      username={comment.authorUsername}
+                      profilePic={comment.avatar}
+                      uid={comment.authorId}
+                    />
+                    <div>
+                      <p className="font-semibold">{comment.authorUsername}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {comment.text}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => toggleRepliesVisibility(comment.id)}
+                      className="text-blue-500"
+                    >
+                      {visibleReplies[comment.id]
+                        ? "Hide Replies"
+                        : "Show Replies"}
+                    </button>
+                    {visibleReplies[comment.id] && (
+                      <div className="ml-6">
+                        {comment.replies.map((reply) => (
+                          <div
+                            key={reply.id}
+                            className="flex items-start space-x-4 mb-2"
+                          >
+                            <Avatar>
+                              <AvatarImage
+                                src={reply.avatar}
+                                alt={reply.authorUsername}
+                              />
+                              <AvatarFallback>
+                                {reply.authorUsername
+                                  ? reply.authorUsername[0]
+                                  : "?"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-semibold">
+                                {reply.authorUsername}
+                              </p>
+                              <p>{reply.text}</p>
+                            </div>
+                          </div>
+                        ))}
+                        <form
+                          onSubmit={(e) => handleReplySubmit(e, comment.id)}
+                          className="mt-2"
+                        >
+                          <Textarea
+                            placeholder={`Reply to ${comment.authorUsername}`}
+                            value={replyInputs[comment.id] || ""}
+                            onChange={(e) =>
+                              handleReplyInputChange(e, comment.id)
+                            }
+                          />
+                          <Button type="submit" className="mt-2">
+                            Reply
+                          </Button>
+                        </form>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </ScrollArea>
+        </>
+      ) : (
+        <div className="flex flex-col items-center">
+          <p className="text-center text-muted-foreground">
+            Please sign in to comment and add items to your favourites and watchlist
+          </p>
+          <Link href={"/auth"} className="mt-4">
+            <Button variant="outline">Sign In</Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

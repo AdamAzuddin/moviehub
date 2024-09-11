@@ -75,7 +75,7 @@ const ClientMovieDetails = ({ id, mediaType }: {id: number, mediaType: 'movie' |
           ) : null}
         </div>
       </div>
-      {user && <CommentSection mediaId={movieDetails.id} mediaType={mediaType} />}
+      <CommentSection mediaId={movieDetails.id} mediaType={mediaType} />
       <div className="mt-8">
         <MovieCarousel
           movies={similarMovies.results}
